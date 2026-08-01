@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-"github.com/gambitier/go-pkgs/apiresponse"
+	"github.com/gambitier/go-pkgs/apiresponse"
 	"github.com/gambitier/go-pkgs/logging"
 	"github.com/gambitier/golang-service-template/internal/config"
 	"github.com/gambitier/golang-service-template/internal/platform"

@@ -64,9 +64,13 @@ Open [`bruno/`](bruno/) in Bruno, select the **local** environment, and run the 
 |--------|-------------|
 | `make run` | Run with `-config config.yaml -env development` |
 | `make test` | Unit tests (+ Mongo repo test if Mongo is up) |
+| `make fmt` | Format Go sources (`gofmt`) |
+| `make hooks` | Enable `.githooks` (runs `make fmt` on every commit) |
 | `make swagger` | Regenerate `swagger/` from annotations |
 | `make lint-arch` | Enforce DDD import rules (`go-arch-lint`) |
 | `make check` | lint + test |
+
+`make setup` enables hooks automatically. Otherwise run `make hooks` once after clone.
 
 ## Rename for a new service
 

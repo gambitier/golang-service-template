@@ -1,9 +1,9 @@
-.PHONY: help run build test clean setup install-deps swagger lint lint-code lint-arch lint-fix check
+.PHONY: help run build test clean setup install-deps swagger fmt hooks lint lint-code lint-arch lint-fix check
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-setup: install-deps ## Install all dependencies
+setup: install-deps hooks ## Install dependencies and enable git hooks
 	@echo "Dependencies installed"
 
 install-deps: ## Install Go dependencies
@@ -64,5 +64,12 @@ lint-fix: ## Run linter with auto-fix
 		go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.8.0; \
 	fi
 	@golangci-lint run --fix
+
+fmt: ## Format Go sources (gofmt)
+	gofmt -w .
+
+hooks: ## Enable repo git hooks (runs make fmt on commit)
+	git config core.hooksPath .githooks
+	@echo "core.hooksPath set to .githooks"
 
 check: lint test ## Run all checks (lint + test)
