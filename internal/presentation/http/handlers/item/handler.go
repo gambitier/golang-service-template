@@ -37,7 +37,7 @@ func toResponse(it *domainitem.Item) ItemResponse {
 // @Accept      json
 // @Produce     json
 // @Param       body body CreateItemRequest true "Item payload"
-// @Success     201 {object} response.Problem
+// @Success     201 {object} ItemResponse
 // @Failure     400 {object} response.Problem
 // @Router      /items [post]
 func (h *Handler) Create(c fiber.Ctx) error {
@@ -63,7 +63,7 @@ func (h *Handler) Create(c fiber.Ctx) error {
 // @Produce     json
 // @Param       limit  query int false "Page size" default(50)
 // @Param       offset query int false "Offset" default(0)
-// @Success     200 {object} response.Problem
+// @Success     200 {object} ListItemsResponse
 // @Failure     400 {object} response.Problem
 // @Router      /items [get]
 func (h *Handler) List(c fiber.Ctx) error {
@@ -88,7 +88,8 @@ func (h *Handler) List(c fiber.Ctx) error {
 // @Tags        items
 // @Produce     json
 // @Param       id path string true "Item ID"
-// @Success     200 {object} response.Problem
+// @Success     200 {object} ItemResponse
+// @Failure     400 {object} response.Problem
 // @Failure     404 {object} response.Problem
 // @Router      /items/{id} [get]
 func (h *Handler) GetByID(c fiber.Ctx) error {
@@ -108,7 +109,7 @@ func (h *Handler) GetByID(c fiber.Ctx) error {
 // @Produce     json
 // @Param       id   path string            true "Item ID"
 // @Param       body body UpdateItemRequest true "Item payload"
-// @Success     200 {object} response.Problem
+// @Success     200 {object} ItemResponse
 // @Failure     400 {object} response.Problem
 // @Failure     404 {object} response.Problem
 // @Router      /items/{id} [put]

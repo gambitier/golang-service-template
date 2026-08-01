@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	domainerr "github.com/gambitier/go-pkgs/errors"
+"github.com/gambitier/go-pkgs/apiresponse"
 	"github.com/gambitier/go-pkgs/logging"
 	commonobservability "github.com/gambitier/go-pkgs/observability"
 	"github.com/gambitier/golang-service-template/internal/config"
@@ -30,18 +30,17 @@ type Server struct {
 // New wires Fiber middleware and routes.
 func New(cfg *config.Config, logger logging.Logger, h *handlers.Handlers) (*Server, error) {
 	app := fiber.New(fiber.Config{
-		AppName:      "golang-service-template",
-		ReadTimeout:  cfg.Server.HTTP.ReadTimeout,
-		WriteTimeout: cfg.Server.HTTP.WriteTimeout,
-		IdleTimeout:  cfg.Server.HTTP.IdleTimeout,
+		AppName:       "golang-service-template",
+		ReadTimeout:   cfg.Server.HTTP.ReadTimeout,
+		WriteTimeout:  cfg.Server.HTTP.WriteTimeout,
+		IdleTimeout:   cfg.Server.HTTP.IdleTimeout,
+		StrictRouting: true, // /items and /items/ are distinct; trailing slash is not silently stripped
 		ErrorHandler: func(c fiber.Ctx, err error) error {
 			mappedErr := err
 			var fe *fiber.Error
 			if errors.As(err, &fe) {
-				mappedErr = domainerr.InvalidArgumentWithFields(fe.Message, map[string]any{"status": fe.Code})
-				if fe.Code >= 500 {
-					mappedErr = domainerr.Internal(fe.Message, fe, nil)
-				}
+				// Preserve Fiber status (404/405/…) instead of collapsing all 4xx to INVALID_ARGUMENT.
+				mappedErr = apiresponse.ToDomainError(fe.Code, fe.Message, fe)
 			}
 			return presentationResponse.WriteError(c, mappedErr)
 		},

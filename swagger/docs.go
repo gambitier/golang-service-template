@@ -48,7 +48,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ListItemsResponse"
                         }
                     },
                     "400": {
@@ -86,7 +86,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
                         }
                     },
                     "400": {
@@ -120,6 +120,12 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
                         }
@@ -166,7 +172,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
                         }
                     },
                     "400": {
@@ -250,6 +256,40 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Notebook"
+                }
+            }
+        },
+        "internal_presentation_http_handlers_item.ItemResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "A ruled notebook"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "507f1f77bcf86cd799439011"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Notebook"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_presentation_http_handlers_item.ListItemsResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
+                    }
                 }
             }
         },

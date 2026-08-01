@@ -27,6 +27,29 @@ definitions:
         example: Notebook
         type: string
     type: object
+  internal_presentation_http_handlers_item.ItemResponse:
+    properties:
+      createdAt:
+        type: string
+      description:
+        example: A ruled notebook
+        type: string
+      id:
+        example: 507f1f77bcf86cd799439011
+        type: string
+      name:
+        example: Notebook
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  internal_presentation_http_handlers_item.ListItemsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_presentation_http_handlers_item.ItemResponse'
+        type: array
+    type: object
   internal_presentation_http_handlers_item.UpdateItemRequest:
     properties:
       description:
@@ -65,7 +88,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem'
+            $ref: '#/definitions/internal_presentation_http_handlers_item.ListItemsResponse'
         "400":
           description: Bad Request
           schema:
@@ -90,7 +113,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem'
+            $ref: '#/definitions/internal_presentation_http_handlers_item.ItemResponse'
         "400":
           description: Bad Request
           schema:
@@ -131,6 +154,10 @@ paths:
         "200":
           description: OK
           schema:
+            $ref: '#/definitions/internal_presentation_http_handlers_item.ItemResponse'
+        "400":
+          description: Bad Request
+          schema:
             $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem'
         "404":
           description: Not Found
@@ -161,7 +188,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem'
+            $ref: '#/definitions/internal_presentation_http_handlers_item.ItemResponse'
         "400":
           description: Bad Request
           schema:
