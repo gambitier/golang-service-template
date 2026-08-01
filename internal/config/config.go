@@ -18,7 +18,7 @@ import (
 type Config struct {
 	Server  ServerConfig                   `mapstructure:"server"`
 	Logging logging.Config                 `mapstructure:"logging"`
-	Opentel commonobservability.YAMLConfig `mapstructure:"opentel"`
+	Opentel commonobservability.Config `mapstructure:"opentel"`
 	Mongo   MongoConfig                    `mapstructure:"mongo"`
 	Swagger SwaggerConfig                  `mapstructure:"swagger"`
 }

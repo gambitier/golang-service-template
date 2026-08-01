@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 
 	"github.com/gambitier/go-pkgs/logging"
@@ -58,7 +59,10 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	otelCfg := platform.ObservabilityFromYAML("golang-service-template", cfg.Opentel)
+	otelCfg := cfg.Opentel
+	if strings.TrimSpace(otelCfg.ServiceName) == "" {
+		otelCfg.ServiceName = "golang-service-template"
+	}
 	otelShutdown, err := platform.InitObservability(ctx, otelCfg, logger)
 	if err != nil {
 		logger.Error("init observability", err, nil)

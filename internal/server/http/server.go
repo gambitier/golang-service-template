@@ -10,8 +10,8 @@ import (
 
 "github.com/gambitier/go-pkgs/apiresponse"
 	"github.com/gambitier/go-pkgs/logging"
-	commonobservability "github.com/gambitier/go-pkgs/observability"
 	"github.com/gambitier/golang-service-template/internal/config"
+	"github.com/gambitier/golang-service-template/internal/platform"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/handlers"
 	presentationMiddleware "github.com/gambitier/golang-service-template/internal/presentation/http/middleware"
 	presentationResponse "github.com/gambitier/golang-service-template/internal/presentation/http/response"
@@ -46,7 +46,7 @@ func New(cfg *config.Config, logger logging.Logger, h *handlers.Handlers) (*Serv
 		},
 	})
 
-	app.Use(commonobservability.FiberMiddleware("golang-service-template-http"))
+	app.Use(platform.FiberMiddleware())
 	app.Use(presentationMiddleware.RecoverMiddleware(logger))
 	app.Use(presentationMiddleware.HttpRequestMiddleware(logger))
 
