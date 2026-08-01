@@ -14,7 +14,7 @@ type probeStatus struct {
 	Status string `json:"status"`
 }
 
-// RegisterRoutes registers probes, swagger, and item API routes.
+// RegisterRoutes registers probes, swagger, and versioned API routes under /api/v1.
 func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h *handlers.Handlers) {
 	app.Get("/livez", func(c fiber.Ctx) error {
 		return response.OK(c, probeStatus{Status: "ok"})
@@ -23,8 +23,6 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h
 	app.Get("/healthz", func(c fiber.Ctx) error {
 		return response.OK(c, probeStatus{Status: "ok"})
 	})
-
-	items := app.Group("/items")
 
 	if cfg.Swagger.Enabled && cfg.Server.Env.IsDevelopment() {
 		logger.Info("swagger enabled", logging.Fields{
@@ -38,8 +36,8 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h
 		} else {
 			logger.Warn("swagger enabled without auth", nil)
 		}
-		items.All("/swagger/*", swaggerHandler)
-		logger.Info("swagger docs available", logging.Fields{"path": "/items/swagger/index.html"})
+		app.All("/swagger/*", swaggerHandler)
+		logger.Info("swagger docs available", logging.Fields{"path": "/swagger/index.html"})
 	} else {
 		logger.Debug("swagger disabled", logging.Fields{
 			"enabled": cfg.Swagger.Enabled,
@@ -47,20 +45,12 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h
 		})
 	}
 
-	v1 := items.Group("/api/v1")
-
-	v1.Get("/livez", func(c fiber.Ctx) error {
-		return response.OK(c, probeStatus{Status: "ok"})
-	})
-	v1.Get("/healthz", func(c fiber.Ctx) error {
-		return response.OK(c, probeStatus{Status: "ok"})
-	})
-
+	v1 := app.Group("/api/v1")
 	v1.Post("/items", h.Item.Create)
 	v1.Get("/items", h.Item.List)
 	v1.Get("/items/:id", h.Item.GetByID)
 	v1.Put("/items/:id", h.Item.Update)
 	v1.Delete("/items/:id", h.Item.Delete)
 
-	logger.Info("routes registered", nil)
+	logger.Info("routes registered", logging.Fields{"api": "/api/v1"})
 }

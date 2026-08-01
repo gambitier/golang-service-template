@@ -6,4 +6,5 @@ Open this directory in [Bruno](https://www.usebruno.com/) as a collection.
 2. Select the **local** environment.
 3. Run **Create Item**, then Get / Update / Delete (uses saved `item_id`).
 
-Base URL defaults to `http://127.0.0.1:8080` (`api_v1` → `/items/api/v1`).
+Base URL defaults to `http://127.0.0.1:8080` (`api_v1` → `/api/v1`).
+Probes use `{{base_url}}/livez` and `{{base_url}}/healthz` (unversioned).

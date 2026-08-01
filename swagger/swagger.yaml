@@ -1,4 +1,4 @@
-basePath: /items/api/v1
+basePath: /api/v1
 definitions:
   github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem:
     properties:

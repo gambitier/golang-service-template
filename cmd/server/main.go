@@ -24,7 +24,7 @@ import (
 // @version         1.0
 // @description     Hexagonal Go service template with MongoDB persistence adapter.
 // @host            localhost:8080
-// @BasePath        /items/api/v1
+// @BasePath        /api/v1
 // @contact.name    API Support
 // @contact.url     https://github.com/gambitier/golang-service-template
 func main() {

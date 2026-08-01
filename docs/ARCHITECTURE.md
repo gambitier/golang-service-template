@@ -78,7 +78,7 @@ itemSvc := appitem.NewService(itemRepo)
 - Success: bare resource JSON (`application/json`); no proprietary envelope.
 - Errors: RFC 9457 problem details via `go-pkgs/apiresponse` (`application/problem+json`).
 - Correlation: `X-Correlation-ID` header only (not in JSON body).
-- Routes live under `/items/api/v1/...` (service prefix + version).
+- Routes live under `/api/v1/...` (versioned API; probes and swagger stay at the root).
 
 ## Swagger
 

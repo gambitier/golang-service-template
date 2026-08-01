@@ -24,15 +24,15 @@ If `go-pkgs` is ever private, set:
 export GOPRIVATE=github.com/gambitier/*
 ```
 
-API base: `http://localhost:8080/items/api/v1`
+API base: `http://localhost:8080/api/v1`
 
-Swagger UI (dev): `http://localhost:8080/items/swagger/index.html`  
+Swagger UI (dev): `http://localhost:8080/swagger/index.html`  
 (basic auth: `admin` / `changeme` by default)
 
 ### Example
 
 ```bash
-curl -s -X POST http://localhost:8080/items/api/v1/items \
+curl -s -X POST http://localhost:8080/api/v1/items \
   -H 'Content-Type: application/json' \
   -d '{"name":"Notebook","description":"ruled"}'
 ```
@@ -76,7 +76,7 @@ Open [`bruno/`](bruno/) in Bruno, select the **local** environment, and run the 
 
 1. Replace module path: `github.com/gambitier/golang-service-template` → yours (`go mod edit -module ...` + find/replace).
 2. Rename the toy `item` domain to your aggregate.
-3. Adjust HTTP prefix (`/items`) and Swagger `@BasePath`.
+3. Adjust API version prefix (`/api/v1`) and Swagger `@BasePath`.
 4. Keep wiring changes in `cmd/server/main.go` / `internal/platform` when swapping persistence or telemetry.
 
 ## Adding Postgres later
