@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/gambitier/go-pkgs/errors/domainerr"
+	"github.com/gambitier/go-pkgs/logging"
+	commonobservability "github.com/gambitier/go-pkgs/observability"
 	"github.com/gambitier/golang-service-template/internal/config"
-	"github.com/gambitier/golang-service-template/internal/domain/domainerr"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/handlers"
 	presentationMiddleware "github.com/gambitier/golang-service-template/internal/presentation/http/middleware"
 	presentationResponse "github.com/gambitier/golang-service-template/internal/presentation/http/response"
@@ -23,11 +24,11 @@ import (
 type Server struct {
 	app    *fiber.App
 	config *config.Config
-	logger *slog.Logger
+	logger logging.Logger
 }
 
 // New wires Fiber middleware and routes.
-func New(cfg *config.Config, logger *slog.Logger, h *handlers.Handlers) (*Server, error) {
+func New(cfg *config.Config, logger logging.Logger, h *handlers.Handlers) (*Server, error) {
 	app := fiber.New(fiber.Config{
 		AppName:      "golang-service-template",
 		ReadTimeout:  cfg.Server.HTTP.ReadTimeout,
@@ -37,15 +38,16 @@ func New(cfg *config.Config, logger *slog.Logger, h *handlers.Handlers) (*Server
 			mappedErr := err
 			var fe *fiber.Error
 			if errors.As(err, &fe) {
-				mappedErr = domainerr.InvalidArgument(fe.Message, map[string]any{"status": fe.Code})
+				mappedErr = domainerr.InvalidArgumentWithFields(fe.Message, map[string]any{"status": fe.Code})
 				if fe.Code >= 500 {
-					mappedErr = domainerr.Internal(fe.Message, fe)
+					mappedErr = domainerr.Internal(fe.Message, fe, nil)
 				}
 			}
 			return presentationResponse.Write(c, mappedErr)
 		},
 	})
 
+	app.Use(commonobservability.FiberMiddleware("golang-service-template-http"))
 	app.Use(presentationMiddleware.RecoverMiddleware(logger))
 	app.Use(presentationMiddleware.HttpRequestMiddleware(logger))
 
@@ -70,7 +72,7 @@ func New(cfg *config.Config, logger *slog.Logger, h *handlers.Handlers) (*Server
 // Start listens until ctx is cancelled, then shuts down gracefully.
 func (s *Server) Start(ctx context.Context) error {
 	addr := fmt.Sprintf(":%d", s.config.Server.HTTP.Port)
-	s.logger.Info("starting HTTP server", "address", addr)
+	s.logger.Info("starting HTTP server", logging.Fields{"address": addr})
 
 	errChan := make(chan error, 1)
 	go func() {
@@ -81,7 +83,7 @@ func (s *Server) Start(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		s.logger.Info("shutting down HTTP server")
+		s.logger.Info("shutting down HTTP server", nil)
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		return s.app.ShutdownWithContext(shutdownCtx)

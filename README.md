@@ -1,6 +1,6 @@
 # Golang Service Template
 
-Standalone hexagonal (ports & adapters) Go service scaffold. Modeled on the architecture used in mature Sidekiq services (payments/quota), without private dependencies.
+Standalone hexagonal (ports & adapters) Go service scaffold. Shared foundations come from independent [`go-pkgs`](https://github.com/gambitier/go-pkgs) modules (`errors`, `logging`, `observability`); wiring glue lives in `internal/platform`.
 
 ## Quick start
 
@@ -16,6 +16,12 @@ make setup
 
 # 4. Run (loads config.yaml + config.development.yaml)
 make run
+```
+
+If `go-pkgs` is ever private, set:
+
+```bash
+export GOPRIVATE=github.com/gambitier/*
 ```
 
 API base: `http://localhost:8080/items/api/v1`
@@ -40,6 +46,7 @@ internal/
   application/               # use cases (depend on ports only)
   infrastructure/persistence/mongodb/  # Mongo adapter (example)
   presentation/http/         # handlers, DTOs, routes
+  platform/                  # glue: logger + OTel + domainerr log fields
   server/                    # HTTP server wiring
   config/
 swagger/                     # generated OpenAPI (swag)
@@ -61,7 +68,7 @@ docs/ARCHITECTURE.md
 1. Replace module path: `github.com/gambitier/golang-service-template` → yours (`go mod edit -module ...` + find/replace).
 2. Rename the toy `item` domain to your aggregate.
 3. Adjust HTTP prefix (`/items`) and Swagger `@BasePath`.
-4. Keep wiring changes in `cmd/server/main.go` only when swapping persistence adapters.
+4. Keep wiring changes in `cmd/server/main.go` / `internal/platform` when swapping persistence or telemetry.
 
 ## Adding Postgres later
 

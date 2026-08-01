@@ -35,9 +35,21 @@ vendors:
       - "github.com/gofiber/contrib/v3/swaggo/**"
       - "github.com/swaggo/swag"
       - "github.com/swaggo/files/v2"
-  slog:
+  go-pkgs-errors:
     in:
-      - "log/slog"
+      - "github.com/gambitier/go-pkgs/errors"
+      - "github.com/gambitier/go-pkgs/errors/**"
+  go-pkgs-logging:
+    in:
+      - "github.com/gambitier/go-pkgs/logging"
+      - "github.com/gambitier/go-pkgs/logging/**"
+  go-pkgs-observability:
+    in:
+      - "github.com/gambitier/go-pkgs/observability"
+      - "github.com/gambitier/go-pkgs/observability/**"
+  logrus:
+    in:
+      - "github.com/sirupsen/logrus"
 
 components:
   domain:
@@ -50,6 +62,8 @@ components:
     in: "presentation/**"
   config:
     in: "config/**"
+  platform:
+    in: "platform/**"
 
 commonComponents:
   - config
@@ -58,20 +72,21 @@ commonVendors:
   - viper
   - gotenv
   - validator
-  - slog
+  - go-pkgs-logging
 
 deps:
   domain:
     mayDependOn:
       - domain
-    canUse: []
+    canUse:
+      - go-pkgs-errors
 
   application:
     mayDependOn:
       - domain
       - application
     canUse:
-      - slog
+      - go-pkgs-errors
 
   infrastructure:
     mayDependOn:
@@ -80,14 +95,32 @@ deps:
       - infrastructure
     canUse:
       - mongodb-driver
-      - slog
+      - go-pkgs-errors
 
   presentation:
     mayDependOn:
       - domain
       - application
       - presentation
+      - platform
     canUse:
       - fiber
-      - slog
       - swagger
+      - go-pkgs-errors
+      - go-pkgs-logging
+
+  platform:
+    mayDependOn:
+      - platform
+    canUse:
+      - go-pkgs-errors
+      - go-pkgs-logging
+      - go-pkgs-observability
+      - logrus
+
+  config:
+    mayDependOn:
+      - config
+    canUse:
+      - go-pkgs-logging
+      - go-pkgs-observability

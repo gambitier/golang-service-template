@@ -2,12 +2,13 @@ package config
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/gambitier/go-pkgs/logging"
+	commonobservability "github.com/gambitier/go-pkgs/observability"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 	"github.com/subosito/gotenv"
@@ -15,15 +16,11 @@ import (
 
 // Config is the root application configuration.
 type Config struct {
-	Server  ServerConfig  `mapstructure:"server"`
-	Logging LoggingConfig `mapstructure:"logging"`
-	Mongo   MongoConfig   `mapstructure:"mongo"`
-	Swagger SwaggerConfig `mapstructure:"swagger"`
-}
-
-// LoggingConfig controls structured logging.
-type LoggingConfig struct {
-	Level string `mapstructure:"level"`
+	Server  ServerConfig                   `mapstructure:"server"`
+	Logging logging.Config                 `mapstructure:"logging"`
+	Opentel commonobservability.YAMLConfig `mapstructure:"opentel"`
+	Mongo   MongoConfig                    `mapstructure:"mongo"`
+	Swagger SwaggerConfig                  `mapstructure:"swagger"`
 }
 
 // ServerConfig holds HTTP listen and CORS settings.
@@ -83,11 +80,11 @@ type SwaggerConfig struct {
 
 // LoadConfig loads base YAML by basename, optional "<base>.<env>.yaml" overlay,
 // expands ${VAR} placeholders, then unmarshals and validates.
-func LoadConfig(logger *slog.Logger, configPath string, env string) (*Config, error) {
+func LoadConfig(logger logging.Logger, configPath string, env string) (*Config, error) {
 	const envFile = ".env"
 	if _, err := os.Stat(envFile); err == nil {
 		if err := gotenv.Load(envFile); err == nil {
-			logger.Info("loaded environment file", "path", envFile)
+			logger.Info("loaded environment file", logging.Fields{"path": envFile})
 		}
 	}
 
@@ -125,7 +122,7 @@ func LoadConfig(logger *slog.Logger, configPath string, env string) (*Config, er
 		if err := baseConfig.MergeConfigMap(envConfig.AllSettings()); err != nil {
 			return nil, fmt.Errorf("merge environment config: %w", err)
 		}
-		logger.Info("merged environment config", "name", envConfigName)
+		logger.Info("merged environment config", logging.Fields{"name": envConfigName})
 	}
 
 	settings := baseConfig.AllSettings()
@@ -154,7 +151,13 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("server.cors.allowOrigins", "*")
 	v.SetDefault("server.cors.allowMethods", "GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS")
 	v.SetDefault("server.cors.allowHeaders", "Origin,Content-Type,Accept,Authorization,X-Requested-With,X-Request-Id")
+	v.SetDefault("logging.service_name", "golang-service-template")
 	v.SetDefault("logging.level", "info")
+	v.SetDefault("logging.format", "json")
+	v.SetDefault("opentel.enabled", false)
+	v.SetDefault("opentel.service_name", "golang-service-template")
+	v.SetDefault("opentel.insecure", true)
+	v.SetDefault("opentel.sampling.ratio", 1.0)
 	v.SetDefault("mongo.uri", "mongodb://127.0.0.1:27017")
 	v.SetDefault("mongo.database", "golang-service-template")
 	v.SetDefault("swagger.enabled", false)

@@ -4,16 +4,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log/slog"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 
+	"github.com/gambitier/go-pkgs/logging"
 	appitem "github.com/gambitier/golang-service-template/internal/application/item"
 	"github.com/gambitier/golang-service-template/internal/config"
 	"github.com/gambitier/golang-service-template/internal/infrastructure/persistence/mongodb"
+	"github.com/gambitier/golang-service-template/internal/platform"
 	"github.com/gambitier/golang-service-template/internal/server"
 
 	_ "github.com/gambitier/golang-service-template/swagger"
@@ -31,44 +31,65 @@ func main() {
 	env := flag.String("env", "", "environment overlay (e.g. development)")
 	flag.Parse()
 
-	bootstrap := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	bootstrap := logging.NewDefault("golang-service-template")
 
 	resolvedConfig, err := resolveConfigPath(*configPath)
 	if err != nil {
-		bootstrap.Error("resolve config path", "error", err)
+		bootstrap.Error("resolve config path", err, nil)
 		os.Exit(1)
 	}
 
 	cfg, err := config.LoadConfig(bootstrap, resolvedConfig, *env)
 	if err != nil {
-		bootstrap.Error("load config", "error", err)
+		bootstrap.Error("load config", err, nil)
 		os.Exit(1)
 	}
 
-	logger := newLogger(cfg.Logging.Level)
-	logger.Info("config loaded", "path", resolvedConfig, "env", cfg.Server.Env.String())
+	logger, err := platform.NewLogger(cfg.Logging)
+	if err != nil {
+		bootstrap.Error("create logger", err, nil)
+		os.Exit(1)
+	}
+	logger.Info("config loaded", logging.Fields{
+		"path": resolvedConfig,
+		"env":  cfg.Server.Env.String(),
+	})
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
+
+	otelCfg := platform.ObservabilityFromYAML("golang-service-template", cfg.Opentel)
+	otelShutdown, err := platform.InitObservability(ctx, otelCfg, logger)
+	if err != nil {
+		logger.Error("init observability", err, nil)
+		os.Exit(1)
+	}
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.Server.HTTP.WriteTimeout)
+		defer cancel()
+		if err := otelShutdown(shutdownCtx); err != nil {
+			logger.Error("observability shutdown", err, nil)
+		}
+	}()
 
 	// Persistence adapter: swap Mongo for Postgres (or another driver) here only.
 	// Domain and application layers depend on domain/item.Repository, not Mongo types.
 	client, db, err := mongodb.Connect(ctx, cfg.Mongo.URI, cfg.Mongo.Database)
 	if err != nil {
-		logger.Error("connect mongo", "error", err)
+		logger.Error("connect mongo", err, nil)
 		os.Exit(1)
 	}
 	defer func() {
 		disconnectCtx, cancel := context.WithTimeout(context.Background(), cfg.Server.HTTP.WriteTimeout)
 		defer cancel()
 		if err := client.Disconnect(disconnectCtx); err != nil {
-			logger.Error("mongo disconnect", "error", err)
+			logger.Error("mongo disconnect", err, nil)
 		}
 	}()
 
 	persistence, err := mongodb.InitializePersistence(ctx, db)
 	if err != nil {
-		logger.Error("initialize persistence", "error", err)
+		logger.Error("initialize persistence", err, nil)
 		os.Exit(1)
 	}
 
@@ -76,30 +97,15 @@ func main() {
 
 	srv, err := server.New(cfg, logger, itemSvc)
 	if err != nil {
-		logger.Error("create server", "error", err)
+		logger.Error("create server", err, nil)
 		os.Exit(1)
 	}
 
-	logger.Info("starting server", "port", cfg.Server.HTTP.Port)
+	logger.Info("starting server", logging.Fields{"port": cfg.Server.HTTP.Port})
 	if err := srv.Start(ctx); err != nil {
-		logger.Error("server stopped", "error", err)
+		logger.Error("server stopped", err, nil)
 		os.Exit(1)
 	}
-}
-
-func newLogger(level string) *slog.Logger {
-	var lvl slog.Level
-	switch strings.ToLower(level) {
-	case "debug":
-		lvl = slog.LevelDebug
-	case "warn", "warning":
-		lvl = slog.LevelWarn
-	case "error":
-		lvl = slog.LevelError
-	default:
-		lvl = slog.LevelInfo
-	}
-	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: lvl}))
 }
 
 func resolveConfigPath(path string) (string, error) {

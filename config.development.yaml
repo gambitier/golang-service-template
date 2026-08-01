@@ -7,7 +7,22 @@ server:
     allowCredentials: false
 
 logging:
+  service_name: golang-service-template
   level: debug
+  format: json
+  sinks:
+    - type: console
+      enabled: true
+
+opentel:
+  enabled: false
+  service_name: golang-service-template
+  collector_url: "localhost:4317"
+  insecure: true
+  sampling:
+    ratio: 1.0
+  resource:
+    deployment_environment: development
 
 mongo:
   uri: "mongodb://127.0.0.1:27017"

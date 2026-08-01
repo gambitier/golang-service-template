@@ -3,21 +3,11 @@ package response
 import (
 	"net/http"
 
-	"github.com/gambitier/golang-service-template/internal/domain/domainerr"
+	"github.com/gambitier/go-pkgs/errors/httpresp"
 	"github.com/gofiber/fiber/v3"
 )
 
 const responseErrorLocalKey = "response_error"
-
-// Envelope is the standard API response shape.
-type Envelope struct {
-	Success   int    `json:"success"`
-	Message   string `json:"message"`
-	Data      any    `json:"data"`
-	RequestID string `json:"requestId,omitempty"`
-	Code      string `json:"code,omitempty"`
-	Fields    any    `json:"fields,omitempty"`
-}
 
 func requestIDFromCtx(c fiber.Ctx) string {
 	if v := c.Get("X-Request-Id"); v != "" {
@@ -34,52 +24,45 @@ func requestIDFromCtx(c fiber.Ctx) string {
 	return ""
 }
 
-// Write maps an error to an HTTP envelope.
+// Write maps an error to an HTTP envelope via go-pkgs/errors/httpresp.
 func Write(c fiber.Ctx, err error) error {
 	if err == nil {
 		return nil
 	}
-
 	reqID := requestIDFromCtx(c)
 	c.Locals(responseErrorLocalKey, err)
-
-	if de, ok := domainerr.As(err); ok {
-		return c.Status(de.HTTPStatus()).JSON(Envelope{
-			Success:   0,
-			Message:   de.Message,
-			Data:      nil,
-			RequestID: reqID,
-			Code:      string(de.Code),
-			Fields:    de.Fields,
-		})
-	}
-
-	return c.Status(http.StatusInternalServerError).JSON(Envelope{
-		Success:   0,
-		Message:   "internal error",
-		Data:      nil,
-		RequestID: reqID,
-		Code:      string(domainerr.CodeInternal),
+	built := httpresp.BuildError(err, reqID)
+	return c.Status(built.Status).JSON(fiber.Map{
+		"success":   0,
+		"message":   built.Msg,
+		"data":      nil,
+		"requestId": reqID,
+		"code":      string(built.Code),
+		"fields":    built.Fields,
 	})
 }
 
 // OK writes a 200 success envelope.
 func OK[T any](c fiber.Ctx, data T) error {
-	return c.Status(http.StatusOK).JSON(Envelope{
-		Success:   1,
-		Message:   "ok",
-		Data:      data,
-		RequestID: requestIDFromCtx(c),
+	reqID := requestIDFromCtx(c)
+	env := httpresp.BuildOKEnvelope(data, reqID)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"success":   1,
+		"message":   "ok",
+		"data":      env.Data,
+		"requestId": reqID,
 	})
 }
 
 // Created writes a 201 success envelope.
 func Created[T any](c fiber.Ctx, data T) error {
-	return c.Status(http.StatusCreated).JSON(Envelope{
-		Success:   1,
-		Message:   "created",
-		Data:      data,
-		RequestID: requestIDFromCtx(c),
+	reqID := requestIDFromCtx(c)
+	env := httpresp.BuildCreatedEnvelope(data, reqID)
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"success":   1,
+		"message":   "created",
+		"data":      env.Data,
+		"requestId": reqID,
 	})
 }
 

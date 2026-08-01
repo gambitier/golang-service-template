@@ -7,7 +7,7 @@ import (
 	"time"
 
 	appitem "github.com/gambitier/golang-service-template/internal/application/item"
-	"github.com/gambitier/golang-service-template/internal/domain/domainerr"
+	"github.com/gambitier/go-pkgs/errors/domainerr"
 	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
 )
 
@@ -40,7 +40,7 @@ func (r *fakeRepo) GetByID(_ context.Context, id domainitem.ID) (*domainitem.Ite
 	defer r.mu.Unlock()
 	it, ok := r.items[id]
 	if !ok {
-		return nil, domainerr.NotFound("item not found", map[string]any{"id": string(id)})
+		return nil, domainerr.NotFound("item not found", nil, map[string]any{"id": string(id)})
 	}
 	cp := *it
 	return &cp, nil
@@ -68,7 +68,7 @@ func (r *fakeRepo) Update(_ context.Context, item *domainitem.Item) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.items[item.ID]; !ok {
-		return domainerr.NotFound("item not found", map[string]any{"id": string(item.ID)})
+		return domainerr.NotFound("item not found", nil, map[string]any{"id": string(item.ID)})
 	}
 	item.UpdatedAt = time.Now().UTC()
 	cp := *item
@@ -80,7 +80,7 @@ func (r *fakeRepo) Delete(_ context.Context, id domainitem.ID) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if _, ok := r.items[id]; !ok {
-		return domainerr.NotFound("item not found", map[string]any{"id": string(id)})
+		return domainerr.NotFound("item not found", nil, map[string]any{"id": string(id)})
 	}
 	delete(r.items, id)
 	return nil

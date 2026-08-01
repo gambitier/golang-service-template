@@ -20,7 +20,19 @@ Enforced by `.go-arch-lint.yml` (`make lint-arch`).
 | **presentation** | HTTP handlers, DTOs, routes | domain, application (not infrastructure) |
 | **config** | YAML / env loading | anywhere |
 
-Composition root is `cmd/server/main.go`: load config → connect DB → build adapters → build services → start HTTP.
+Composition root is `cmd/server/main.go`: load config → `internal/platform` (logger + OTel) → connect DB → build adapters → build services → start HTTP.
+
+## Shared packages (`go-pkgs`)
+
+Reusable modules live in [`github.com/gambitier/go-pkgs`](https://github.com/gambitier/go-pkgs) as **independent** Go modules (no cross-imports):
+
+| Module | Role |
+|--------|------|
+| `errors` | `domainerr`, `httpresp`, `httpstatus` |
+| `logging` | structured logger, sinks, correlation |
+| `observability` | OTel Init + Fiber middleware |
+
+Composition (logger ↔ OTel bridge, domainerr → log fields) stays in **`internal/platform`**, not in `go-pkgs` and not under `pkg/`.
 
 ## Persistence port vs application ports
 
@@ -62,7 +74,7 @@ itemSvc := appitem.NewService(itemRepo)
 ## HTTP conventions
 
 - Handlers use presentation DTOs (`handlers/item/dto.go`), not Mongo models.
-- Errors are `*domainerr.Error`; `response.Write` maps them to HTTP envelopes.
+- Errors are `*domainerr.Error` from `go-pkgs/errors`; `response.Write` maps them via `httpresp`.
 - Routes live under `/items/api/v1/...` (service prefix + version).
 
 ## Swagger

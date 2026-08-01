@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/gambitier/golang-service-template/internal/domain/domainerr"
+	"github.com/gambitier/go-pkgs/errors/domainerr"
 	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
 	"github.com/gambitier/golang-service-template/internal/infrastructure/persistence/mongodb/persistopts"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -23,7 +23,7 @@ func NewItemRepository(db *mongo.Database, opts persistopts.Options) (domainitem
 
 	if !opts.SkipIndexes {
 		if err := repo.createIndexes(context.Background()); err != nil {
-			return nil, domainerr.Internal(ErrMsgFailedToCreateIndexes, err)
+			return nil, domainerr.Internal(ErrMsgFailedToCreateIndexes, err, nil)
 		}
 	}
 
@@ -55,12 +55,12 @@ func (r *mongoItemRepository) Create(ctx context.Context, it *domainitem.Item) e
 
 	mc, err := toMongoItem(it)
 	if err != nil {
-		return domainerr.Internal(ErrMsgFailedToConvertItem, err)
+		return domainerr.Internal(ErrMsgFailedToConvertItem, err, nil)
 	}
 
 	result, err := collection.InsertOne(ctx, mc)
 	if err != nil {
-		return domainerr.Internal(ErrMsgFailedToInsertItem, err)
+		return domainerr.Internal(ErrMsgFailedToInsertItem, err, nil)
 	}
 
 	it.ID = domainitem.ID(result.InsertedID.(bson.ObjectID).Hex())
@@ -72,7 +72,7 @@ func (r *mongoItemRepository) GetByID(ctx context.Context, id domainitem.ID) (*d
 
 	objectID, err := bson.ObjectIDFromHex(string(id))
 	if err != nil {
-		return nil, domainerr.InvalidArgument(ErrMsgInvalidItemID, map[string]any{
+		return nil, domainerr.InvalidArgumentWithFields(ErrMsgInvalidItemID, map[string]any{
 			"field": ItemField.ID,
 			"value": string(id),
 		})
@@ -82,11 +82,11 @@ func (r *mongoItemRepository) GetByID(ctx context.Context, id domainitem.ID) (*d
 	err = collection.FindOne(ctx, bson.M{ItemField.ID: objectID}).Decode(&mc)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, domainerr.NotFound(ErrMsgItemNotFound, map[string]any{
+			return nil, domainerr.NotFound(ErrMsgItemNotFound, nil, map[string]any{
 				"id": string(id),
 			})
 		}
-		return nil, domainerr.Internal(ErrMsgFailedToFindItem, err)
+		return nil, domainerr.Internal(ErrMsgFailedToFindItem, err, nil)
 	}
 
 	return fromMongoItem(&mc), nil
@@ -109,7 +109,7 @@ func (r *mongoItemRepository) List(ctx context.Context, limit, offset int) ([]*d
 
 	cursor, err := collection.Find(ctx, bson.M{}, opts)
 	if err != nil {
-		return nil, domainerr.Internal(ErrMsgFailedToListItems, err)
+		return nil, domainerr.Internal(ErrMsgFailedToListItems, err, nil)
 	}
 	defer func() { _ = cursor.Close(ctx) }()
 
@@ -117,12 +117,12 @@ func (r *mongoItemRepository) List(ctx context.Context, limit, offset int) ([]*d
 	for cursor.Next(ctx) {
 		var mc mongoItem
 		if err := cursor.Decode(&mc); err != nil {
-			return nil, domainerr.Internal(ErrMsgFailedToListItems, err)
+			return nil, domainerr.Internal(ErrMsgFailedToListItems, err, nil)
 		}
 		items = append(items, fromMongoItem(&mc))
 	}
 	if err := cursor.Err(); err != nil {
-		return nil, domainerr.Internal(ErrMsgFailedToListItems, err)
+		return nil, domainerr.Internal(ErrMsgFailedToListItems, err, nil)
 	}
 
 	if items == nil {
@@ -136,7 +136,7 @@ func (r *mongoItemRepository) Update(ctx context.Context, it *domainitem.Item) e
 
 	objectID, err := bson.ObjectIDFromHex(string(it.ID))
 	if err != nil {
-		return domainerr.InvalidArgument(ErrMsgInvalidItemID, map[string]any{
+		return domainerr.InvalidArgumentWithFields(ErrMsgInvalidItemID, map[string]any{
 			"field": ItemField.ID,
 			"value": string(it.ID),
 		})
@@ -146,15 +146,15 @@ func (r *mongoItemRepository) Update(ctx context.Context, it *domainitem.Item) e
 
 	mc, err := toMongoItem(it)
 	if err != nil {
-		return domainerr.Internal(ErrMsgFailedToConvertItem, err)
+		return domainerr.Internal(ErrMsgFailedToConvertItem, err, nil)
 	}
 
 	result, err := collection.ReplaceOne(ctx, bson.M{ItemField.ID: objectID}, mc)
 	if err != nil {
-		return domainerr.Internal(ErrMsgFailedToUpdateItem, err)
+		return domainerr.Internal(ErrMsgFailedToUpdateItem, err, nil)
 	}
 	if result.MatchedCount == 0 {
-		return domainerr.NotFound(ErrMsgItemNotFound, map[string]any{
+		return domainerr.NotFound(ErrMsgItemNotFound, nil, map[string]any{
 			"id": string(it.ID),
 		})
 	}
@@ -166,7 +166,7 @@ func (r *mongoItemRepository) Delete(ctx context.Context, id domainitem.ID) erro
 
 	objectID, err := bson.ObjectIDFromHex(string(id))
 	if err != nil {
-		return domainerr.InvalidArgument(ErrMsgInvalidItemID, map[string]any{
+		return domainerr.InvalidArgumentWithFields(ErrMsgInvalidItemID, map[string]any{
 			"field": ItemField.ID,
 			"value": string(id),
 		})
@@ -174,10 +174,10 @@ func (r *mongoItemRepository) Delete(ctx context.Context, id domainitem.ID) erro
 
 	result, err := collection.DeleteOne(ctx, bson.M{ItemField.ID: objectID})
 	if err != nil {
-		return domainerr.Internal(ErrMsgFailedToDeleteItem, err)
+		return domainerr.Internal(ErrMsgFailedToDeleteItem, err, nil)
 	}
 	if result.DeletedCount == 0 {
-		return domainerr.NotFound(ErrMsgItemNotFound, map[string]any{
+		return domainerr.NotFound(ErrMsgItemNotFound, nil, map[string]any{
 			"id": string(id),
 		})
 	}

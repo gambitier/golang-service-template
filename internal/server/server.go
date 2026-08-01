@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"log/slog"
 
+	"github.com/gambitier/go-pkgs/logging"
 	appitem "github.com/gambitier/golang-service-template/internal/application/item"
 	"github.com/gambitier/golang-service-template/internal/config"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/handlers"
@@ -16,7 +16,7 @@ type Server struct {
 }
 
 // New wires handlers and the HTTP server.
-func New(cfg *config.Config, logger *slog.Logger, itemSvc *appitem.Service) (*Server, error) {
+func New(cfg *config.Config, logger logging.Logger, itemSvc *appitem.Service) (*Server, error) {
 	h := handlers.NewHandlers(itemSvc)
 	httpSrv, err := httpserver.New(cfg, logger, h)
 	if err != nil {

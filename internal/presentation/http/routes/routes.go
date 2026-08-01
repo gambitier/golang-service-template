@@ -1,8 +1,7 @@
 package routes
 
 import (
-	"log/slog"
-
+	"github.com/gambitier/go-pkgs/logging"
 	"github.com/gambitier/golang-service-template/internal/config"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/handlers"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/middleware"
@@ -11,7 +10,7 @@ import (
 )
 
 // RegisterRoutes registers probes, swagger, and item API routes.
-func RegisterRoutes(app *fiber.App, cfg *config.Config, logger *slog.Logger, h *handlers.Handlers) {
+func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h *handlers.Handlers) {
 	app.Get("/livez", func(c fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"data":    nil,
@@ -31,18 +30,24 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger *slog.Logger, h *
 	items := app.Group("/items")
 
 	if cfg.Swagger.Enabled && cfg.Server.Env.IsDevelopment() {
-		logger.Info("swagger enabled", "enabled", cfg.Swagger.Enabled, "env", cfg.Server.Env.String())
+		logger.Info("swagger enabled", logging.Fields{
+			"enabled": cfg.Swagger.Enabled,
+			"env":     cfg.Server.Env.String(),
+		})
 		swaggerHandler := swaggo.HandlerDefault
 		if cfg.Swagger.Username != "" && cfg.Swagger.Password != "" {
-			logger.Info("applying swagger basic auth", "username", cfg.Swagger.Username)
+			logger.Info("applying swagger basic auth", logging.Fields{"username": cfg.Swagger.Username})
 			swaggerHandler = middleware.BasicAuthMiddleware(swaggerHandler, cfg.Swagger.Username, cfg.Swagger.Password)
 		} else {
-			logger.Warn("swagger enabled without auth")
+			logger.Warn("swagger enabled without auth", nil)
 		}
 		items.All("/swagger/*", swaggerHandler)
-		logger.Info("swagger docs available", "path", "/items/swagger/index.html")
+		logger.Info("swagger docs available", logging.Fields{"path": "/items/swagger/index.html"})
 	} else {
-		logger.Debug("swagger disabled", "enabled", cfg.Swagger.Enabled, "env", cfg.Server.Env.String())
+		logger.Debug("swagger disabled", logging.Fields{
+			"enabled": cfg.Swagger.Enabled,
+			"env":     cfg.Server.Env.String(),
+		})
 	}
 
 	v1 := items.Group("/api/v1")
@@ -60,5 +65,5 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger *slog.Logger, h *
 	v1.Put("/items/:id", h.Item.Update)
 	v1.Delete("/items/:id", h.Item.Delete)
 
-	logger.Info("routes registered")
+	logger.Info("routes registered", nil)
 }

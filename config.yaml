@@ -17,7 +17,23 @@ server:
     allowCredentials: false
 
 logging:
+  service_name: golang-service-template
   level: info
+  format: json
+  sinks:
+    - type: console
+      enabled: true
+
+opentel:
+  enabled: false
+  service_name: golang-service-template
+  collector_url: ""
+  insecure: true
+  sampling:
+    ratio: 1.0
+  resource:
+    deployment_environment: production
+    service_version: ""
 
 mongo:
   uri: "${MONGO_URI}"

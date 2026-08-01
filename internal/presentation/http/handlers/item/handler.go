@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	appitem "github.com/gambitier/golang-service-template/internal/application/item"
-	"github.com/gambitier/golang-service-template/internal/domain/domainerr"
+	"github.com/gambitier/go-pkgs/errors/domainerr"
 	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
 	"github.com/gofiber/fiber/v3"
@@ -43,7 +43,7 @@ func toResponse(it *domainitem.Item) ItemResponse {
 func (h *Handler) Create(c fiber.Ctx) error {
 	var req CreateItemRequest
 	if err := c.Bind().JSON(&req); err != nil {
-		return response.Write(c, domainerr.InvalidArgument("invalid request body", map[string]any{"error": err.Error()}))
+		return response.Write(c, domainerr.InvalidArgumentWithFields("invalid request body", map[string]any{"error": err.Error()}))
 	}
 
 	it, err := h.svc.Create(c.Context(), appitem.CreateInput{
@@ -116,7 +116,7 @@ func (h *Handler) Update(c fiber.Ctx) error {
 	id := domainitem.ID(c.Params("id"))
 	var req UpdateItemRequest
 	if err := c.Bind().JSON(&req); err != nil {
-		return response.Write(c, domainerr.InvalidArgument("invalid request body", map[string]any{"error": err.Error()}))
+		return response.Write(c, domainerr.InvalidArgumentWithFields("invalid request body", map[string]any{"error": err.Error()}))
 	}
 
 	it, err := h.svc.Update(c.Context(), appitem.UpdateInput{
