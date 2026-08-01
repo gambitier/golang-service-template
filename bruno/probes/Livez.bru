@@ -1,0 +1,15 @@
+meta {
+  name: Livez
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/livez
+  body: none
+  auth: inherit
+}
+
+docs {
+  Process liveness probe. Expects `{ "status": "ok" }`.
+}

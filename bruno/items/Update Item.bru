@@ -1,0 +1,22 @@
+meta {
+  name: Update Item
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{api_v1}}/items/{{item_id}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Notebook",
+    "description": "Updated description"
+  }
+}
+
+docs {
+  Updates an existing item. Requires `item_id` from Create Item.
+}

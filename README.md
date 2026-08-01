@@ -50,8 +50,13 @@ internal/
   server/                    # HTTP server wiring
   config/
 swagger/                     # generated OpenAPI (swag)
+bruno/                       # Bruno API collection (local Item CRUD)
 docs/ARCHITECTURE.md
 ```
+
+## Bruno
+
+Open [`bruno/`](bruno/) in Bruno, select the **local** environment, and run the Item requests against `make run`.
 
 ## Make targets
 

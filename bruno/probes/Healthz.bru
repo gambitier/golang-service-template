@@ -1,0 +1,15 @@
+meta {
+  name: Healthz
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/healthz
+  body: none
+  auth: inherit
+}
+
+docs {
+  Process readiness/health probe. Expects `{ "status": "ok" }`.
+}

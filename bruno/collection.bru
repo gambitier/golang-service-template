@@ -1,0 +1,22 @@
+meta {
+  name: golang-service-template
+}
+
+headers {
+  Content-Type: application/json
+  X-Correlation-ID: {{correlation_id}}
+}
+
+auth {
+  mode: none
+}
+
+docs {
+  Bruno collection for the golang-service-template toy Item API.
+
+  Open this folder in Bruno, select the `local` environment, start the service
+  (`make run`), then exercise probes and CRUD under `items/`.
+
+  Success responses are bare JSON. Errors use RFC 9457 `application/problem+json`.
+  Correlation is carried only on the `X-Correlation-ID` header.
+}

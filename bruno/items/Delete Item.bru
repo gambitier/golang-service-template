@@ -1,0 +1,15 @@
+meta {
+  name: Delete Item
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{api_v1}}/items/{{item_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  Deletes an item. Expects HTTP 204 with empty body.
+}

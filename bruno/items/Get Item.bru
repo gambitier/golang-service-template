@@ -1,0 +1,16 @@
+meta {
+  name: Get Item
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_v1}}/items/{{item_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  Fetches one item by `item_id` (set by Create Item).
+  Missing id returns RFC 9457 problem JSON (`NOT_FOUND`).
+}
