@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gambitier/go-pkgs/logging"
 	"github.com/gambitier/golang-service-template/internal/config"
@@ -62,7 +63,7 @@ func Run(ctx context.Context, opts Options) error {
 		mongo:  mongoComp,
 	}
 
-	app := lifecycle.New(cfg.Server.HTTP.WriteTimeout)
+	app := lifecycle.New(10 * time.Second)
 	app.Add(mongoComp, otelComp, httpComp)
 
 	logger.Info("starting server", logging.Fields{"port": cfg.Server.HTTP.Port})

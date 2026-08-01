@@ -7,22 +7,22 @@ import (
 
 // DomainErrFields extracts structured fields from a domain error for logging.
 // Composition lives here so logging and errors packages stay independent.
+// Includes cause-chain fields from errors.LogFields while keeping client-safe
+// error_msg / error_code for filtering.
 func DomainErrFields(err error) logging.Fields {
 	if err == nil {
 		return nil
 	}
-	de, ok := domainerr.As(err)
-	if !ok {
-		return logging.Fields{"error": err.Error()}
-	}
-	fields := logging.Fields{
-		"error":      de.Error(),
-		"error_code": string(de.Code),
-		"error_msg":  de.Message,
-	}
-	collected := domainerr.CollectFields(err)
-	for k, v := range collected {
+	fields := logging.Fields{}
+	for k, v := range domainerr.LogFields(err) {
 		fields[k] = v
+	}
+	if de, ok := domainerr.As(err); ok {
+		fields["error_code"] = string(de.Code)
+		fields["error_msg"] = de.Message
+		for k, v := range domainerr.CollectFields(err) {
+			fields[k] = v
+		}
 	}
 	return fields
 }
