@@ -1,7 +1,7 @@
 package item
 
 import (
-	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
+	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 

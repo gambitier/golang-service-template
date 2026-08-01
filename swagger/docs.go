@@ -48,13 +48,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ListItemsResponse"
+                            "$ref": "#/definitions/internal_item_presentation_http.ListItemsResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     }
                 }
@@ -78,7 +78,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_presentation_http_handlers_item.CreateItemRequest"
+                            "$ref": "#/definitions/internal_item_presentation_http.CreateItemRequest"
                         }
                     }
                 ],
@@ -86,13 +86,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
+                            "$ref": "#/definitions/internal_item_presentation_http.ItemResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     }
                 }
@@ -121,19 +121,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
+                            "$ref": "#/definitions/internal_item_presentation_http.ItemResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     }
                 }
@@ -164,7 +164,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_presentation_http_handlers_item.UpdateItemRequest"
+                            "$ref": "#/definitions/internal_item_presentation_http.UpdateItemRequest"
                         }
                     }
                 ],
@@ -172,19 +172,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
+                            "$ref": "#/definitions/internal_item_presentation_http.ItemResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     }
                 }
@@ -211,7 +211,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem"
+                            "$ref": "#/definitions/github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem"
                         }
                     }
                 }
@@ -219,7 +219,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_gambitier_golang-service-template_internal_presentation_http_response.Problem": {
+        "github_com_gambitier_golang-service-template_internal_shared_presentation_http_response.Problem": {
             "type": "object",
             "properties": {
                 "code": {
@@ -246,7 +246,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_presentation_http_handlers_item.CreateItemRequest": {
+        "internal_item_presentation_http.CreateItemRequest": {
             "type": "object",
             "properties": {
                 "description": {
@@ -259,7 +259,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_presentation_http_handlers_item.ItemResponse": {
+        "internal_item_presentation_http.ItemResponse": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -282,18 +282,18 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_presentation_http_handlers_item.ListItemsResponse": {
+        "internal_item_presentation_http.ListItemsResponse": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_presentation_http_handlers_item.ItemResponse"
+                        "$ref": "#/definitions/internal_item_presentation_http.ItemResponse"
                     }
                 }
             }
         },
-        "internal_presentation_http_handlers_item.UpdateItemRequest": {
+        "internal_item_presentation_http.UpdateItemRequest": {
             "type": "object",
             "properties": {
                 "description": {

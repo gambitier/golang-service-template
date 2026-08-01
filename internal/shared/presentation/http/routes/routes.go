@@ -3,9 +3,9 @@ package routes
 import (
 	"github.com/gambitier/go-pkgs/logging"
 	"github.com/gambitier/golang-service-template/internal/config"
-	"github.com/gambitier/golang-service-template/internal/presentation/http/handlers"
-	"github.com/gambitier/golang-service-template/internal/presentation/http/middleware"
-	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
+	itemhttp "github.com/gambitier/golang-service-template/internal/item/presentation/http"
+	"github.com/gambitier/golang-service-template/internal/shared/presentation/http/middleware"
+	"github.com/gambitier/golang-service-template/internal/shared/presentation/http/response"
 	swaggo "github.com/gofiber/contrib/v3/swaggo"
 	"github.com/gofiber/fiber/v3"
 )
@@ -15,7 +15,7 @@ type probeStatus struct {
 }
 
 // RegisterRoutes registers probes, swagger, and versioned API routes under /api/v1.
-func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h *handlers.Handlers) {
+func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, itemHandler *itemhttp.Handler) {
 	app.Get("/livez", func(c fiber.Ctx) error {
 		return response.OK(c, probeStatus{Status: "ok"})
 	})
@@ -46,11 +46,7 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h
 	}
 
 	v1 := app.Group("/api/v1")
-	v1.Post("/items", h.Item.Create)
-	v1.Get("/items", h.Item.List)
-	v1.Get("/items/:id", h.Item.GetByID)
-	v1.Put("/items/:id", h.Item.Update)
-	v1.Delete("/items/:id", h.Item.Delete)
+	itemhttp.Register(v1, itemHandler)
 
 	logger.Info("routes registered", logging.Fields{"api": "/api/v1"})
 }

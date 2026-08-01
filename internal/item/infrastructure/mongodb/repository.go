@@ -6,8 +6,8 @@ import (
 	"time"
 
 	domainerr "github.com/gambitier/go-pkgs/errors"
-	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
-	"github.com/gambitier/golang-service-template/internal/infrastructure/persistence/mongodb/persistopts"
+	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
+	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/persistopts"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"

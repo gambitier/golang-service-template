@@ -40,19 +40,22 @@ curl -s -X POST http://localhost:8080/api/v1/items \
 ## Layout
 
 ```
-cmd/server/                  # composition root
+cmd/server/                  # tiny entry: flags + bootstrap.Run
 internal/
-  domain/                    # entities + repository ports
-  application/               # use cases (depend on ports only)
-  infrastructure/persistence/mongodb/  # Mongo adapter (example)
-  presentation/http/         # handlers, DTOs, routes
-  platform/                  # glue: logger + OTel + domain error log fields
-  server/                    # HTTP server wiring
+  item/                      # vertical slice (domain/application/infrastructure/presentation)
+  shared/
+    bootstrap/               # composition root
+    lifecycle/               # Component Start/Stop + graceful shutdown
+    platform/                # logger + OTel
+    presentation/http/       # middleware.Register, response, routes shell
+    server/                  # HTTP lifecycle.Component
+    infrastructure/          # Mongo connect, bsonutil, …
   config/
 swagger/                     # generated OpenAPI (swag)
 bruno/                       # Bruno API collection (local Item CRUD)
 docs/ARCHITECTURE.md
 ```
+
 
 ## Bruno
 
@@ -75,10 +78,10 @@ Open [`bruno/`](bruno/) in Bruno, select the **local** environment, and run the 
 ## Rename for a new service
 
 1. Replace module path: `github.com/gambitier/golang-service-template` → yours (`go mod edit -module ...` + find/replace).
-2. Rename the toy `item` domain to your aggregate.
-3. Adjust API version prefix (`/api/v1`) and Swagger `@BasePath`.
-4. Keep wiring changes in `cmd/server/main.go` / `internal/platform` when swapping persistence or telemetry.
+2. Rename the toy `item` slice under `internal/item/` to your aggregate (same four layers).
+3. Adjust API routes (`/api/v1/...`) and Swagger `@BasePath`.
+4. Wire new slices in `shared/bootstrap` / shared routes; keep lifecycle components for process deps.
 
 ## Adding Postgres later
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Domain and application stay unchanged; implement `item.Repository` under `infrastructure/persistence/postgres` and swap construction in `main`.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Domain and application stay unchanged; implement `item/domain.Repository` under the item slice and construct that adapter where the HTTP component is built in bootstrap.

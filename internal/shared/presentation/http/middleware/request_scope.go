@@ -8,8 +8,8 @@ import (
 	domainerr "github.com/gambitier/go-pkgs/errors"
 	"github.com/gambitier/go-pkgs/logging"
 	"github.com/gambitier/go-pkgs/logging/correlation"
-	"github.com/gambitier/golang-service-template/internal/platform"
-	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
+	"github.com/gambitier/golang-service-template/internal/shared/platform"
+	"github.com/gambitier/golang-service-template/internal/shared/presentation/http/response"
 	"github.com/gofiber/fiber/v3"
 )
 

@@ -8,7 +8,9 @@ allow:
 excludeFiles:
   - "^.*_test\\.go$"
   - "^.*/test/.*$"
-  - "^.*/server/.*$"
+  - "^.*/shared/bootstrap/.*$"
+  - "^.*/shared/server/.*$"
+  - "^.*/shared/lifecycle/.*$"
 
 vendors:
   mongodb-driver:
@@ -57,17 +59,17 @@ vendors:
 
 components:
   domain:
-    in: "domain/**"
+    in: "**/domain/**"
   application:
-    in: "application/**"
+    in: "**/application/**"
   infrastructure:
-    in: "infrastructure/**"
+    in: "**/infrastructure/**"
   presentation:
-    in: "presentation/**"
+    in: "**/presentation/**"
   config:
     in: "config/**"
   platform:
-    in: "platform/**"
+    in: "**/platform/**"
 
 commonComponents:
   - config
@@ -122,6 +124,7 @@ deps:
       - go-pkgs-logging
       - go-pkgs-observability
       - logrus
+      - fiber
 
   config:
     mayDependOn:

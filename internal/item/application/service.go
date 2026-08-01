@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	domainerr "github.com/gambitier/go-pkgs/errors"
-	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
+	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
 )
 
 // Service orchestrates item use cases against the persistence port.

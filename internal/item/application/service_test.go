@@ -7,8 +7,8 @@ import (
 	"time"
 
 	domainerr "github.com/gambitier/go-pkgs/errors"
-	appitem "github.com/gambitier/golang-service-template/internal/application/item"
-	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
+	appitem "github.com/gambitier/golang-service-template/internal/item/application"
+	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
 )
 
 type fakeRepo struct {

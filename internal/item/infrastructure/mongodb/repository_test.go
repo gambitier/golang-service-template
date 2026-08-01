@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
-	"github.com/gambitier/golang-service-template/internal/infrastructure/persistence/mongodb"
-	mongoitem "github.com/gambitier/golang-service-template/internal/infrastructure/persistence/mongodb/item"
-	"github.com/gambitier/golang-service-template/internal/infrastructure/persistence/mongodb/persistopts"
+	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
+	mongoitem "github.com/gambitier/golang-service-template/internal/item/infrastructure/mongodb"
+	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/mongodb"
+	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/persistopts"
 )
 
 func TestMongoItemRepository_CRUD(t *testing.T) {

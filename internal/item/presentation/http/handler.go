@@ -4,9 +4,9 @@ import (
 	"strconv"
 
 	domainerr "github.com/gambitier/go-pkgs/errors"
-	appitem "github.com/gambitier/golang-service-template/internal/application/item"
-	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
-	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
+	appitem "github.com/gambitier/golang-service-template/internal/item/application"
+	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
+	"github.com/gambitier/golang-service-template/internal/shared/presentation/http/response"
 	"github.com/gofiber/fiber/v3"
 )
 
