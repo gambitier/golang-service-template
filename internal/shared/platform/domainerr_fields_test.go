@@ -38,9 +38,19 @@ func TestDomainErrFields_internalIncludesSourceAndStack(t *testing.T) {
 	if src == "" || !strings.Contains(src, ".go") {
 		t.Fatalf("error_source = %q, want non-empty path with .go", src)
 	}
-	stack, _ := fields["stack_trace"].(string)
-	if strings.TrimSpace(stack) == "" {
-		t.Fatal("expected stack_trace for INTERNAL error")
+	stack, ok := fields["stack_trace"].([]string)
+	if !ok || len(stack) == 0 {
+		t.Fatalf("stack_trace = %#v, want non-empty []string", fields["stack_trace"])
+	}
+	joined := strings.Join(stack, "\n")
+	module := domainerr.MainModulePath()
+	if module != "" && !strings.Contains(joined, module) && !strings.Contains(joined, "domainerr_fields_test.go") {
+		t.Fatalf("stack_trace = %#v, want app module frames (%s)", stack, module)
+	}
+	for _, frame := range stack {
+		if strings.Contains(frame, "github.com/gofiber/") || strings.Contains(frame, "github.com/valyala/fasthttp") {
+			t.Fatalf("stack_trace should omit framework frames, got %#v", stack)
+		}
 	}
 }
 

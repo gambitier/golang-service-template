@@ -1,8 +1,6 @@
 package platform
 
 import (
-	"strings"
-
 	domainerr "github.com/gambitier/go-pkgs/errors"
 	"github.com/gambitier/go-pkgs/logging"
 )
@@ -11,7 +9,7 @@ import (
 // Composition lives here so logging and errors packages stay independent.
 // Includes cause-chain fields from errors.LogFields while keeping client-safe
 // error_msg / error_code for filtering. Always adds error_source when available;
-// stack_trace only for INTERNAL errors.
+// stack_trace only for INTERNAL errors, filtered to the main module by default.
 func DomainErrFields(err error) logging.Fields {
 	if err == nil {
 		return nil
@@ -30,8 +28,8 @@ func DomainErrFields(err error) logging.Fields {
 			fields[k] = v
 		}
 		if de.Code == domainerr.CodeInternal {
-			if stack := strings.TrimSpace(domainerr.StackTraceString(err)); stack != "" {
-				fields["stack_trace"] = stack
+			if frames := domainerr.AppStackTraceLines(err, domainerr.StackFrameOptions{}); len(frames) > 0 {
+				fields["stack_trace"] = frames
 			}
 		}
 	}
