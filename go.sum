@@ -25,8 +25,10 @@ github.com/fxamacker/cbor/v2 v2.9.2 h1:X4Ksno9+x3cz0TZv69ec1hxP/+tymuR8PXQJyDwfh
 github.com/fxamacker/cbor/v2 v2.9.2/go.mod h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=
 github.com/gabriel-vasile/mimetype v1.4.13 h1:46nXokslUBsAJE/wMsp5gtO500a4F3Nkz9Ufpk2AcUM=
 github.com/gabriel-vasile/mimetype v1.4.13/go.mod h1:d+9Oxyo1wTzWdyVUPMmXFvp4F9tea18J8ufA774AB3s=
-github.com/gambitier/go-pkgs/errors v0.1.0 h1:uDzlpq4xjNDX86EhBAaWxUDJFVsHrn2pk6Z7RF11J0s=
-github.com/gambitier/go-pkgs/errors v0.1.0/go.mod h1:T5bHpz+fsfGOn+go2Fpeu7TE4lLBnUB0gD2VgJ4GpVc=
+github.com/gambitier/go-pkgs/apiresponse v0.1.0 h1:oXKoD5JvYJ5xwvP2d5UPyDGEPnPKF+okNIFWYO1BsYQ=
+github.com/gambitier/go-pkgs/apiresponse v0.1.0/go.mod h1:GZy3Yh9va9gSLT3JoRm7pPug0jKTrxJ0BmuifkLdnTs=
+github.com/gambitier/go-pkgs/errors v0.2.0 h1:v3f6FM7fultJvlU38M7n7vvw3lBpCT2jOdjcW0/8V8Q=
+github.com/gambitier/go-pkgs/errors v0.2.0/go.mod h1:T5bHpz+fsfGOn+go2Fpeu7TE4lLBnUB0gD2VgJ4GpVc=
 github.com/gambitier/go-pkgs/logging v0.1.0 h1:5bjwozzzB23Eukfvc2x2Rye3bwvepw/+aHFjJ2/HPBY=
 github.com/gambitier/go-pkgs/logging v0.1.0/go.mod h1:TN6dnr+ULc1Oq3funpG5Y6tijP5bhHB7u2JLBaZKIf4=
 github.com/gambitier/go-pkgs/observability v0.1.0 h1:vQLWTNPNw3uzpolaA5vV2g97PoAz1uCdS5C/C101uuU=

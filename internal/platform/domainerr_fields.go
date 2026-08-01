@@ -1,7 +1,7 @@
 package platform
 
 import (
-	"github.com/gambitier/go-pkgs/errors/domainerr"
+	domainerr "github.com/gambitier/go-pkgs/errors"
 	"github.com/gambitier/go-pkgs/logging"
 )
 
@@ -16,9 +16,9 @@ func DomainErrFields(err error) logging.Fields {
 		return logging.Fields{"error": err.Error()}
 	}
 	fields := logging.Fields{
-		"error":       de.Error(),
-		"error_code":  string(de.Code),
-		"error_msg":   de.Message,
+		"error":      de.Error(),
+		"error_code": string(de.Code),
+		"error_msg":  de.Message,
 	}
 	collected := domainerr.CollectFields(err)
 	for k, v := range collected {

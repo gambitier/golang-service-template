@@ -39,6 +39,10 @@ vendors:
     in:
       - "github.com/gambitier/go-pkgs/errors"
       - "github.com/gambitier/go-pkgs/errors/**"
+  go-pkgs-apiresponse:
+    in:
+      - "github.com/gambitier/go-pkgs/apiresponse"
+      - "github.com/gambitier/go-pkgs/apiresponse/**"
   go-pkgs-logging:
     in:
       - "github.com/gambitier/go-pkgs/logging"
@@ -107,6 +111,7 @@ deps:
       - fiber
       - swagger
       - go-pkgs-errors
+      - go-pkgs-apiresponse
       - go-pkgs-logging
 
   platform:

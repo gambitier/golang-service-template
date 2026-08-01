@@ -46,7 +46,7 @@ internal/
   application/               # use cases (depend on ports only)
   infrastructure/persistence/mongodb/  # Mongo adapter (example)
   presentation/http/         # handlers, DTOs, routes
-  platform/                  # glue: logger + OTel + domainerr log fields
+  platform/                  # glue: logger + OTel + domain error log fields
   server/                    # HTTP server wiring
   config/
 swagger/                     # generated OpenAPI (swag)

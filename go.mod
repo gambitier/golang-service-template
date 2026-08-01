@@ -3,7 +3,8 @@ module github.com/gambitier/golang-service-template
 go 1.25.2
 
 require (
-	github.com/gambitier/go-pkgs/errors v0.1.0
+	github.com/gambitier/go-pkgs/apiresponse v0.1.0
+	github.com/gambitier/go-pkgs/errors v0.2.0
 	github.com/gambitier/go-pkgs/logging v0.1.0
 	github.com/gambitier/go-pkgs/observability v0.1.0
 	github.com/go-playground/validator/v10 v10.30.3

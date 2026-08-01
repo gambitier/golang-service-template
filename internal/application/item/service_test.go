@@ -7,7 +7,7 @@ import (
 	"time"
 
 	appitem "github.com/gambitier/golang-service-template/internal/application/item"
-	"github.com/gambitier/go-pkgs/errors/domainerr"
+	domainerr "github.com/gambitier/go-pkgs/errors"
 	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
 )
 

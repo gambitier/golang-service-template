@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/gambitier/go-pkgs/errors/domainerr"
+	domainerr "github.com/gambitier/go-pkgs/errors"
 	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
 )
 

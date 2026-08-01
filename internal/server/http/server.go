@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gambitier/go-pkgs/errors/domainerr"
+	domainerr "github.com/gambitier/go-pkgs/errors"
 	"github.com/gambitier/go-pkgs/logging"
 	commonobservability "github.com/gambitier/go-pkgs/observability"
 	"github.com/gambitier/golang-service-template/internal/config"
@@ -43,7 +43,7 @@ func New(cfg *config.Config, logger logging.Logger, h *handlers.Handlers) (*Serv
 					mappedErr = domainerr.Internal(fe.Message, fe, nil)
 				}
 			}
-			return presentationResponse.Write(c, mappedErr)
+			return presentationResponse.WriteError(c, mappedErr)
 		},
 	})
 

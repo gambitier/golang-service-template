@@ -5,26 +5,23 @@ import (
 	"github.com/gambitier/golang-service-template/internal/config"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/handlers"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/middleware"
+	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
 	swaggo "github.com/gofiber/contrib/v3/swaggo"
 	"github.com/gofiber/fiber/v3"
 )
 
+type probeStatus struct {
+	Status string `json:"status"`
+}
+
 // RegisterRoutes registers probes, swagger, and item API routes.
 func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h *handlers.Handlers) {
 	app.Get("/livez", func(c fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"data":    nil,
-			"success": 1,
-			"message": "ok",
-		})
+		return response.OK(c, probeStatus{Status: "ok"})
 	})
 
 	app.Get("/healthz", func(c fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"data":    nil,
-			"success": 1,
-			"message": "ok",
-		})
+		return response.OK(c, probeStatus{Status: "ok"})
 	})
 
 	items := app.Group("/items")
@@ -53,10 +50,10 @@ func RegisterRoutes(app *fiber.App, cfg *config.Config, logger logging.Logger, h
 	v1 := items.Group("/api/v1")
 
 	v1.Get("/livez", func(c fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{"success": 1, "message": "ok", "data": nil})
+		return response.OK(c, probeStatus{Status: "ok"})
 	})
 	v1.Get("/healthz", func(c fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{"success": 1, "message": "ok", "data": nil})
+		return response.OK(c, probeStatus{Status: "ok"})
 	})
 
 	v1.Post("/items", h.Item.Create)

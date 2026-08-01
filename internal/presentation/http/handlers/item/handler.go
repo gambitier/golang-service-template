@@ -3,8 +3,8 @@ package item
 import (
 	"strconv"
 
+	domainerr "github.com/gambitier/go-pkgs/errors"
 	appitem "github.com/gambitier/golang-service-template/internal/application/item"
-	"github.com/gambitier/go-pkgs/errors/domainerr"
 	domainitem "github.com/gambitier/golang-service-template/internal/domain/item"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
 	"github.com/gofiber/fiber/v3"
@@ -37,13 +37,13 @@ func toResponse(it *domainitem.Item) ItemResponse {
 // @Accept      json
 // @Produce     json
 // @Param       body body CreateItemRequest true "Item payload"
-// @Success     201 {object} response.Envelope
-// @Failure     400 {object} response.Envelope
+// @Success     201 {object} response.Problem
+// @Failure     400 {object} response.Problem
 // @Router      /items [post]
 func (h *Handler) Create(c fiber.Ctx) error {
 	var req CreateItemRequest
 	if err := c.Bind().JSON(&req); err != nil {
-		return response.Write(c, domainerr.InvalidArgumentWithFields("invalid request body", map[string]any{"error": err.Error()}))
+		return response.WriteError(c, domainerr.InvalidArgumentWithFields("invalid request body", map[string]any{"error": err.Error()}))
 	}
 
 	it, err := h.svc.Create(c.Context(), appitem.CreateInput{
@@ -51,7 +51,7 @@ func (h *Handler) Create(c fiber.Ctx) error {
 		Description: req.Description,
 	})
 	if err != nil {
-		return response.Write(c, err)
+		return response.WriteError(c, err)
 	}
 	return response.Created(c, toResponse(it))
 }
@@ -63,8 +63,8 @@ func (h *Handler) Create(c fiber.Ctx) error {
 // @Produce     json
 // @Param       limit  query int false "Page size" default(50)
 // @Param       offset query int false "Offset" default(0)
-// @Success     200 {object} response.Envelope
-// @Failure     400 {object} response.Envelope
+// @Success     200 {object} response.Problem
+// @Failure     400 {object} response.Problem
 // @Router      /items [get]
 func (h *Handler) List(c fiber.Ctx) error {
 	limit, _ := strconv.Atoi(c.Query("limit", "50"))
@@ -72,7 +72,7 @@ func (h *Handler) List(c fiber.Ctx) error {
 
 	items, err := h.svc.List(c.Context(), limit, offset)
 	if err != nil {
-		return response.Write(c, err)
+		return response.WriteError(c, err)
 	}
 
 	out := make([]ItemResponse, 0, len(items))
@@ -88,14 +88,14 @@ func (h *Handler) List(c fiber.Ctx) error {
 // @Tags        items
 // @Produce     json
 // @Param       id path string true "Item ID"
-// @Success     200 {object} response.Envelope
-// @Failure     404 {object} response.Envelope
+// @Success     200 {object} response.Problem
+// @Failure     404 {object} response.Problem
 // @Router      /items/{id} [get]
 func (h *Handler) GetByID(c fiber.Ctx) error {
 	id := domainitem.ID(c.Params("id"))
 	it, err := h.svc.GetByID(c.Context(), id)
 	if err != nil {
-		return response.Write(c, err)
+		return response.WriteError(c, err)
 	}
 	return response.OK(c, toResponse(it))
 }
@@ -108,15 +108,15 @@ func (h *Handler) GetByID(c fiber.Ctx) error {
 // @Produce     json
 // @Param       id   path string            true "Item ID"
 // @Param       body body UpdateItemRequest true "Item payload"
-// @Success     200 {object} response.Envelope
-// @Failure     400 {object} response.Envelope
-// @Failure     404 {object} response.Envelope
+// @Success     200 {object} response.Problem
+// @Failure     400 {object} response.Problem
+// @Failure     404 {object} response.Problem
 // @Router      /items/{id} [put]
 func (h *Handler) Update(c fiber.Ctx) error {
 	id := domainitem.ID(c.Params("id"))
 	var req UpdateItemRequest
 	if err := c.Bind().JSON(&req); err != nil {
-		return response.Write(c, domainerr.InvalidArgumentWithFields("invalid request body", map[string]any{"error": err.Error()}))
+		return response.WriteError(c, domainerr.InvalidArgumentWithFields("invalid request body", map[string]any{"error": err.Error()}))
 	}
 
 	it, err := h.svc.Update(c.Context(), appitem.UpdateInput{
@@ -125,7 +125,7 @@ func (h *Handler) Update(c fiber.Ctx) error {
 		Description: req.Description,
 	})
 	if err != nil {
-		return response.Write(c, err)
+		return response.WriteError(c, err)
 	}
 	return response.OK(c, toResponse(it))
 }
@@ -136,12 +136,12 @@ func (h *Handler) Update(c fiber.Ctx) error {
 // @Tags        items
 // @Param       id path string true "Item ID"
 // @Success     204 "No Content"
-// @Failure     404 {object} response.Envelope
+// @Failure     404 {object} response.Problem
 // @Router      /items/{id} [delete]
 func (h *Handler) Delete(c fiber.Ctx) error {
 	id := domainitem.ID(c.Params("id"))
 	if err := h.svc.Delete(c.Context(), id); err != nil {
-		return response.Write(c, err)
+		return response.WriteError(c, err)
 	}
 	return response.NoContent(c)
 }

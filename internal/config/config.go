@@ -150,7 +150,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("server.environment", "development")
 	v.SetDefault("server.cors.allowOrigins", "*")
 	v.SetDefault("server.cors.allowMethods", "GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS")
-	v.SetDefault("server.cors.allowHeaders", "Origin,Content-Type,Accept,Authorization,X-Requested-With,X-Request-Id")
+	v.SetDefault("server.cors.allowHeaders", "Origin,Content-Type,Accept,Authorization,X-Requested-With,X-Correlation-ID")
 	v.SetDefault("logging.service_name", "golang-service-template")
 	v.SetDefault("logging.level", "info")
 	v.SetDefault("logging.format", "json")

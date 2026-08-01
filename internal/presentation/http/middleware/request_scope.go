@@ -5,13 +5,15 @@ import (
 	"encoding/hex"
 	"time"
 
+	domainerr "github.com/gambitier/go-pkgs/errors"
 	"github.com/gambitier/go-pkgs/logging"
+	"github.com/gambitier/go-pkgs/logging/correlation"
 	"github.com/gambitier/golang-service-template/internal/platform"
 	"github.com/gambitier/golang-service-template/internal/presentation/http/response"
 	"github.com/gofiber/fiber/v3"
 )
 
-func newRequestID() string {
+func newCorrelationID() string {
 	var b [16]byte
 	if _, err := rand.Read(b[:]); err != nil {
 		return hex.EncodeToString([]byte(time.Now().Format("150405.000000000")))
@@ -19,18 +21,20 @@ func newRequestID() string {
 	return hex.EncodeToString(b[:])
 }
 
-// HttpRequestMiddleware adds a request ID and logs request completion.
+// HttpRequestMiddleware propagates X-Correlation-ID and logs request completion.
 func HttpRequestMiddleware(logger logging.Logger) fiber.Handler {
 	return func(c fiber.Ctx) error {
-		reqID := c.Get("X-Request-Id")
-		if reqID == "" {
-			reqID = c.Get("X-Request-ID")
+		incoming := c.Get(correlation.HeaderName)
+		cid := incoming
+		if cid == "" {
+			cid = newCorrelationID()
 		}
-		if reqID == "" {
-			reqID = newRequestID()
-		}
-		c.Locals("request_id", reqID)
-		c.Set("X-Request-Id", reqID)
+		c.Set(correlation.HeaderName, cid)
+		c.Locals("correlation_id", cid)
+
+		ctx, _ := correlation.EnsureCorrelationID(c.Context(), cid)
+		c.SetContext(ctx)
+		reqLogger := logger.WithCorrelationID(cid)
 
 		start := time.Now()
 		err := c.Next()
@@ -38,31 +42,31 @@ func HttpRequestMiddleware(logger logging.Logger) fiber.Handler {
 
 		status := c.Response().StatusCode()
 		fields := logging.Fields{
-			"method":     c.Method(),
-			"path":       c.Path(),
-			"status":     status,
-			"latency_ms": latency.Milliseconds(),
-			"request_id": reqID,
+			"method":         c.Method(),
+			"path":           c.Path(),
+			"status":         status,
+			"latency_ms":     latency.Milliseconds(),
+			"correlation_id": cid,
 		}
 
 		if respErr := response.GetResponseError(c); respErr != nil {
 			for k, v := range platform.DomainErrFields(respErr) {
 				fields[k] = v
 			}
-			logger.Error("request completed with error", respErr, fields)
+			reqLogger.Error("request completed with error", respErr, fields)
 			return err
 		}
 		if err != nil {
-			logger.Error("request failed", err, fields)
+			reqLogger.Error("request failed", err, fields)
 			return err
 		}
 
-		logger.Info("request completed", fields)
+		reqLogger.Info("request completed", fields)
 		return nil
 	}
 }
 
-// RecoverMiddleware recovers from panics and returns 500.
+// RecoverMiddleware recovers from panics and returns an RFC 9457 problem.
 func RecoverMiddleware(logger logging.Logger) fiber.Handler {
 	return func(c fiber.Ctx) error {
 		defer func() {
@@ -71,11 +75,9 @@ func RecoverMiddleware(logger logging.Logger) fiber.Handler {
 					"panic": r,
 					"path":  c.Path(),
 				})
-				_ = c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"success": 0,
-					"message": "internal error",
-					"data":    nil,
-				})
+				_ = response.WriteError(c, domainerr.Internal("internal error", nil, map[string]any{
+					"panic": r,
+				}))
 			}
 		}()
 		return c.Next()

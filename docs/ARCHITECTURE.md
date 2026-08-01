@@ -24,15 +24,16 @@ Composition root is `cmd/server/main.go`: load config → `internal/platform` (l
 
 ## Shared packages (`go-pkgs`)
 
-Reusable modules live in [`github.com/gambitier/go-pkgs`](https://github.com/gambitier/go-pkgs) as **independent** Go modules (no cross-imports):
+Reusable modules live in [`github.com/gambitier/go-pkgs`](https://github.com/gambitier/go-pkgs) as **independent** Go modules:
 
 | Module | Role |
 |--------|------|
-| `errors` | `domainerr`, `httpresp`, `httpstatus` |
-| `logging` | structured logger, sinks, correlation |
+| `errors` | Domain error types (codes, fields, wrap helpers) |
+| `apiresponse` | RFC 9457 Problem Details + code↔HTTP status mapping |
+| `logging` | Structured logger, sinks, `X-Correlation-ID` |
 | `observability` | OTel Init + Fiber middleware |
 
-Composition (logger ↔ OTel bridge, domainerr → log fields) stays in **`internal/platform`**, not in `go-pkgs` and not under `pkg/`.
+`apiresponse` depends on `errors`. Composition (logger ↔ OTel bridge, domain errors → log fields) stays in **`internal/platform`**.
 
 ## Persistence port vs application ports
 
@@ -74,7 +75,9 @@ itemSvc := appitem.NewService(itemRepo)
 ## HTTP conventions
 
 - Handlers use presentation DTOs (`handlers/item/dto.go`), not Mongo models.
-- Errors are `*domainerr.Error` from `go-pkgs/errors`; `response.Write` maps them via `httpresp`.
+- Success: bare resource JSON (`application/json`); no proprietary envelope.
+- Errors: RFC 9457 problem details via `go-pkgs/apiresponse` (`application/problem+json`).
+- Correlation: `X-Correlation-ID` header only (not in JSON body).
 - Routes live under `/items/api/v1/...` (service prefix + version).
 
 ## Swagger
