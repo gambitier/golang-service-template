@@ -1,0 +1,29 @@
+# Base config. Secrets and env-specific values use ${VAR} expansion.
+# Local overlay: run with -env development to merge config.development.yaml.
+
+server:
+  http:
+    port: 8080
+    readTimeout: 30s
+    writeTimeout: 30s
+    idleTimeout: 120s
+  environment: production
+  cors:
+    allowOrigins: "*"
+    allowOriginSuffixes: ""
+    allowMethods: "GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS"
+    allowHeaders: "Origin,Content-Type,Accept,Authorization,X-Requested-With,X-Request-Id"
+    exposeHeaders: ""
+    allowCredentials: false
+
+logging:
+  level: info
+
+mongo:
+  uri: "${MONGO_URI}"
+  database: "golang-service-template"
+
+swagger:
+  enabled: false
+  username: "admin"
+  password: "${SWAGGER_PASS}"

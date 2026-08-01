@@ -1,0 +1,13 @@
+.git
+tmp/
+.env
+.env.*
+*.log
+.DS_Store
+.vscode/
+.idea/
+coverage.out
+coverage.html
+bin/
+dist/
+debug

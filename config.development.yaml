@@ -1,0 +1,19 @@
+server:
+  environment: development
+  http:
+    port: 8080
+  cors:
+    allowOrigins: "*"
+    allowCredentials: false
+
+logging:
+  level: debug
+
+mongo:
+  uri: "mongodb://127.0.0.1:27017"
+  database: "golang-service-template-dev"
+
+swagger:
+  enabled: true
+  username: "admin"
+  password: "changeme"

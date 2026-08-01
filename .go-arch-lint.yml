@@ -1,0 +1,93 @@
+version: 3
+workdir: internal
+allow:
+  depOnAnyVendor: false
+  deepScan: true
+  ignoreNotFoundComponents: false
+
+excludeFiles:
+  - "^.*_test\\.go$"
+  - "^.*/test/.*$"
+  - "^.*/server/.*$"
+
+vendors:
+  mongodb-driver:
+    in:
+      - "go.mongodb.org/mongo-driver"
+      - "go.mongodb.org/mongo-driver/**"
+  fiber:
+    in:
+      - "github.com/gofiber/fiber/v3"
+      - "github.com/gofiber/fiber/v3/**"
+      - "github.com/gofiber/contrib/v3/**"
+  viper:
+    in:
+      - "github.com/spf13/viper"
+  gotenv:
+    in:
+      - "github.com/subosito/gotenv"
+  validator:
+    in:
+      - "github.com/go-playground/validator/v10"
+  swagger:
+    in:
+      - "github.com/gofiber/contrib/v3/swaggo"
+      - "github.com/gofiber/contrib/v3/swaggo/**"
+      - "github.com/swaggo/swag"
+      - "github.com/swaggo/files/v2"
+  slog:
+    in:
+      - "log/slog"
+
+components:
+  domain:
+    in: "domain/**"
+  application:
+    in: "application/**"
+  infrastructure:
+    in: "infrastructure/**"
+  presentation:
+    in: "presentation/**"
+  config:
+    in: "config/**"
+
+commonComponents:
+  - config
+
+commonVendors:
+  - viper
+  - gotenv
+  - validator
+  - slog
+
+deps:
+  domain:
+    mayDependOn:
+      - domain
+    canUse: []
+
+  application:
+    mayDependOn:
+      - domain
+      - application
+    canUse:
+      - slog
+
+  infrastructure:
+    mayDependOn:
+      - domain
+      - application
+      - infrastructure
+    canUse:
+      - mongodb-driver
+      - slog
+
+  presentation:
+    mayDependOn:
+      - domain
+      - application
+      - presentation
+    canUse:
+      - fiber
+      - slog
+      - swagger

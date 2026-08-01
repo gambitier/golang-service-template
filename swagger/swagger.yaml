@@ -1,0 +1,171 @@
+basePath: /items/api/v1
+definitions:
+  github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope:
+    properties:
+      code:
+        type: string
+      data: {}
+      fields: {}
+      message:
+        type: string
+      requestId:
+        type: string
+      success:
+        type: integer
+    type: object
+  internal_presentation_http_handlers_item.CreateItemRequest:
+    properties:
+      description:
+        example: A ruled notebook
+        type: string
+      name:
+        example: Notebook
+        type: string
+    type: object
+  internal_presentation_http_handlers_item.UpdateItemRequest:
+    properties:
+      description:
+        example: Updated description
+        type: string
+      name:
+        example: Notebook
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: API Support
+    url: https://github.com/gambitier/golang-service-template
+  description: Hexagonal Go service template with MongoDB persistence adapter.
+  title: Golang Service Template API
+  version: "1.0"
+paths:
+  /items:
+    get:
+      description: List items with optional pagination
+      parameters:
+      - default: 50
+        description: Page size
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+      summary: List items
+      tags:
+      - items
+    post:
+      consumes:
+      - application/json
+      description: Create a new item
+      parameters:
+      - description: Item payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_presentation_http_handlers_item.CreateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+      summary: Create item
+      tags:
+      - items
+  /items/{id}:
+    delete:
+      description: Delete an item by ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+      summary: Delete item
+      tags:
+      - items
+    get:
+      description: Fetch a single item
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+      summary: Get item by ID
+      tags:
+      - items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing item
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_presentation_http_handlers_item.UpdateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_gambitier_golang-service-template_internal_presentation_http_response.Envelope'
+      summary: Update item
+      tags:
+      - items
+swagger: "2.0"
