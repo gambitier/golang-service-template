@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gambitier/go-pkgs/logging"
-	commonobservability "github.com/gambitier/go-pkgs/observability"
+	"github.com/gambitier/go-pkgs/observability"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 	"github.com/subosito/gotenv"
@@ -16,11 +16,11 @@ import (
 
 // Config is the root application configuration.
 type Config struct {
-	Server  ServerConfig                   `mapstructure:"server"`
-	Logging logging.Config                 `mapstructure:"logging"`
-	Opentel commonobservability.Config `mapstructure:"opentel"`
-	Mongo   MongoConfig                    `mapstructure:"mongo"`
-	Swagger SwaggerConfig                  `mapstructure:"swagger"`
+	Server  ServerConfig         `mapstructure:"server"`
+	Logging logging.Config       `mapstructure:"logging"`
+	Opentel observability.Config `mapstructure:"opentel"`
+	Mongo   MongoConfig          `mapstructure:"mongo"`
+	Swagger SwaggerConfig        `mapstructure:"swagger"`
 }
 
 // ServerConfig holds HTTP listen and CORS settings.

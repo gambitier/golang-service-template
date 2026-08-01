@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gambitier/go-pkgs/logging"
-	commonobservability "github.com/gambitier/go-pkgs/observability"
+	"github.com/gambitier/go-pkgs/observability"
 	"github.com/sirupsen/logrus"
 )
 
@@ -40,12 +40,12 @@ func (l otelLogger) Warn(message string, fields map[string]any) {
 }
 
 // InitObservability starts OpenTelemetry when enabled and attaches the logrus OTLP bridge.
-func InitObservability(ctx context.Context, cfg commonobservability.Config, logger logging.Logger) (func(context.Context) error, error) {
-	var sink commonobservability.Logger
+func InitObservability(ctx context.Context, cfg observability.Config, logger logging.Logger) (func(context.Context) error, error) {
+	var sink observability.Logger
 	if logger != nil {
 		sink = otelLogger{inner: logger}
 	}
-	shutdown, err := commonobservability.Init(ctx, cfg, sink)
+	shutdown, err := observability.Init(ctx, cfg, sink)
 	if err != nil {
 		return nil, fmt.Errorf("observability init: %w", err)
 	}
