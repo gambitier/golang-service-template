@@ -158,7 +158,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("opentel.service_name", "golang-service-template")
 	v.SetDefault("opentel.insecure", true)
 	v.SetDefault("opentel.sampling.ratio", 1.0)
-	v.SetDefault("mongo.uri", "mongodb://127.0.0.1:27017")
+	v.SetDefault("mongo.uri", "mongodb://admin:password@127.0.0.1:27017/?replicaSet=rs0&authSource=admin")
 	v.SetDefault("mongo.database", "golang-service-template")
 	v.SetDefault("swagger.enabled", false)
 	v.SetDefault("swagger.username", "admin")

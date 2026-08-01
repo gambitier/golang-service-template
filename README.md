@@ -5,8 +5,8 @@ Standalone hexagonal (ports & adapters) Go service scaffold. Shared foundations 
 ## Quick start
 
 ```bash
-# 1. MongoDB
-docker run -d -p 27017:27017 --name mongo mongo:7
+# 1. MongoDB with replica set + admin auth (or set MONGO_URI to match your local setup)
+#    Default URI: mongodb://admin:password@127.0.0.1:27017/?replicaSet=rs0&authSource=admin
 
 # 2. Env (optional; development overlay has local defaults)
 cp .env.example .env
