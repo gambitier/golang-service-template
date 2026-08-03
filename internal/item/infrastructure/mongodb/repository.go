@@ -7,7 +7,6 @@ import (
 
 	domainerr "github.com/gambitier/go-pkgs/errors"
 	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
-	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/persistopts"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -18,32 +17,8 @@ type mongoItemRepository struct {
 }
 
 // NewItemRepository creates a MongoDB-backed item.Repository.
-func NewItemRepository(db *mongo.Database, opts persistopts.Options) (domainitem.Repository, error) {
-	repo := &mongoItemRepository{db: db}
-
-	if !opts.SkipIndexes {
-		if err := repo.createIndexes(context.Background()); err != nil {
-			return nil, domainerr.Internal(ErrMsgFailedToCreateIndexes, err, nil)
-		}
-	}
-
-	return repo, nil
-}
-
-func (r *mongoItemRepository) createIndexes(ctx context.Context) error {
-	collection := r.db.Collection(CollectionName)
-
-	indexes := []mongo.IndexModel{
-		{
-			Keys: bson.D{{Key: ItemField.Name, Value: 1}},
-		},
-		{
-			Keys: bson.D{{Key: ItemField.CreatedAt, Value: -1}},
-		},
-	}
-
-	_, err := collection.Indexes().CreateMany(ctx, indexes)
-	return err
+func NewItemRepository(db *mongo.Database) (domainitem.Repository, error) {
+	return &mongoItemRepository{db: db}, nil
 }
 
 func (r *mongoItemRepository) Create(ctx context.Context, it *domainitem.Item) error {

@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gambitier/go-pkgs/mongodb"
 	domainitem "github.com/gambitier/golang-service-template/internal/item/domain"
 	mongoitem "github.com/gambitier/golang-service-template/internal/item/infrastructure/mongodb"
-	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/mongodb"
-	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/persistopts"
+	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/migrations"
 )
 
 func TestMongoItemRepository_CRUD(t *testing.T) {
@@ -21,7 +21,12 @@ func TestMongoItemRepository_CRUD(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	client, db, err := mongodb.Connect(ctx, uri, "golang-service-template-test")
+	dbName := "golang-service-template-test"
+	if err := migrations.Up(uri, dbName); err != nil {
+		t.Skipf("mongo migrations not available: %v", err)
+	}
+
+	client, db, err := mongodb.Connect(ctx, uri, dbName, 0)
 	if err != nil {
 		t.Skipf("mongo not available: %v", err)
 	}
@@ -30,7 +35,7 @@ func TestMongoItemRepository_CRUD(t *testing.T) {
 		_ = client.Disconnect(context.Background())
 	}()
 
-	repo, err := mongoitem.NewItemRepository(db, persistopts.Options{})
+	repo, err := mongoitem.NewItemRepository(db)
 	if err != nil {
 		t.Fatalf("new repo: %v", err)
 	}

@@ -1,0 +1,4 @@
+[
+  { "dropIndexes": "Items", "index": "createdAt_-1" },
+  { "dropIndexes": "Items", "index": "name_1" }
+]

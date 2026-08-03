@@ -67,8 +67,9 @@ type CORSConfig struct {
 
 // MongoConfig backs persistence.
 type MongoConfig struct {
-	URI      string `mapstructure:"uri" validate:"required"`
-	Database string `mapstructure:"database" validate:"required"`
+	URI                    string        `mapstructure:"uri" validate:"required"`
+	Database               string        `mapstructure:"database" validate:"required"`
+	ServerSelectionTimeout time.Duration `mapstructure:"serverSelectionTimeout"`
 }
 
 // SwaggerConfig gates OpenAPI UI exposure.

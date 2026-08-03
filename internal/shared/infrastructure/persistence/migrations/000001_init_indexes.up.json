@@ -1,0 +1,15 @@
+[
+  {
+    "createIndexes": "Items",
+    "indexes": [
+      {
+        "key": { "name": 1 },
+        "name": "name_1"
+      },
+      {
+        "key": { "createdAt": -1 },
+        "name": "createdAt_-1"
+      }
+    ]
+  }
+]

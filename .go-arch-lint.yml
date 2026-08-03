@@ -10,7 +10,7 @@ excludeFiles:
   - "^.*/test/.*$"
   - "^.*/shared/bootstrap/.*$"
   - "^.*/shared/server/.*$"
-  - "^.*/shared/lifecycle/.*$"
+  - "^.*/shared/infrastructure/persistence/migrations/.*$"
 
 vendors:
   mongodb-driver:

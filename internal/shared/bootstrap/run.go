@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gambitier/go-pkgs/lifecycle"
 	"github.com/gambitier/go-pkgs/logging"
+	"github.com/gambitier/go-pkgs/mongodb"
 	"github.com/gambitier/golang-service-template/internal/config"
 	itemapp "github.com/gambitier/golang-service-template/internal/item/application"
 	itemmongo "github.com/gambitier/golang-service-template/internal/item/infrastructure/mongodb"
 	itemhttp "github.com/gambitier/golang-service-template/internal/item/presentation/http"
-	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/mongodb"
-	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/persistopts"
-	"github.com/gambitier/golang-service-template/internal/shared/lifecycle"
+	"github.com/gambitier/golang-service-template/internal/shared/infrastructure/persistence/migrations"
 	"github.com/gambitier/golang-service-template/internal/shared/platform"
 	"github.com/gambitier/golang-service-template/internal/shared/server"
 )
@@ -50,12 +50,17 @@ func Run(ctx context.Context, opts Options) error {
 		"env":  cfg.Server.Env.String(),
 	})
 
+	if err := migrations.Up(cfg.Mongo.URI, cfg.Mongo.Database); err != nil {
+		return fmt.Errorf("mongo migrations: %w", err)
+	}
+	logger.Info("mongo migrations applied", logging.Fields{})
+
 	otelCfg := cfg.Opentel
 	if strings.TrimSpace(otelCfg.ServiceName) == "" {
 		otelCfg.ServiceName = "golang-service-template"
 	}
 
-	mongoComp := mongodb.NewComponent(cfg.Mongo.URI, cfg.Mongo.Database)
+	mongoComp := mongodb.NewComponent(cfg.Mongo.URI, cfg.Mongo.Database, cfg.Mongo.ServerSelectionTimeout)
 	otelComp := platform.NewOTelComponent(otelCfg, logger)
 	httpComp := &httpComponent{
 		cfg:    cfg,
@@ -81,7 +86,7 @@ type httpComponent struct {
 func (c *httpComponent) Name() string { return "http" }
 
 func (c *httpComponent) Start(ctx context.Context) error {
-	itemRepo, err := itemmongo.NewItemRepository(c.mongo.DB(), persistopts.Options{})
+	itemRepo, err := itemmongo.NewItemRepository(c.mongo.DB())
 	if err != nil {
 		return fmt.Errorf("item repository: %w", err)
 	}

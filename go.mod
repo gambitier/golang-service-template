@@ -5,12 +5,15 @@ go 1.25.2
 require (
 	github.com/gambitier/go-pkgs/apiresponse v0.1.0
 	github.com/gambitier/go-pkgs/errors v0.4.0
+	github.com/gambitier/go-pkgs/lifecycle v0.1.0
 	github.com/gambitier/go-pkgs/logging v0.2.0
+	github.com/gambitier/go-pkgs/mongodb v0.1.0
 	github.com/gambitier/go-pkgs/observability v0.3.0
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/gofiber/contrib/v3/otel v1.0.0
 	github.com/gofiber/contrib/v3/swaggo v1.0.9
 	github.com/gofiber/fiber/v3 v3.4.0
+	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/viper v1.21.0
 	github.com/subosito/gotenv v1.6.0
@@ -21,6 +24,7 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.2.2 // indirect
+	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
@@ -44,10 +48,12 @@ require (
 	github.com/go-openapi/swag/yamlutils v0.28.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/gofiber/schema v1.8.3 // indirect
 	github.com/gofiber/utils/v2 v2.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0 // indirect
 	github.com/klauspost/compress v1.19.1 // indirect
@@ -72,6 +78,7 @@ require (
 	github.com/xdg-go/scram v1.2.0 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
+	go.mongodb.org/mongo-driver v1.7.5 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib v1.43.0 // indirect
 	go.opentelemetry.io/contrib/bridges/otellogrus v0.18.0 // indirect

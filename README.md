@@ -1,6 +1,6 @@
 # Golang Service Template
 
-Standalone hexagonal (ports & adapters) Go service scaffold. Shared foundations come from independent [`go-pkgs`](https://github.com/gambitier/go-pkgs) modules (`errors`, `logging`, `observability`); wiring glue lives in `internal/platform`.
+Standalone hexagonal (ports & adapters) Go service scaffold. Shared foundations come from independent [`go-pkgs`](https://github.com/gambitier/go-pkgs) modules (`errors`, `logging`, `observability`, `lifecycle`, `mongodb`); wiring glue lives in `internal/shared/platform`.
 
 ## Quick start
 
@@ -44,12 +44,12 @@ cmd/server/                  # tiny entry: flags + bootstrap.Run
 internal/
   item/                      # vertical slice (domain/application/infrastructure/presentation)
   shared/
-    bootstrap/               # composition root
-    lifecycle/               # Component Start/Stop + graceful shutdown
+    bootstrap/               # composition root (migrate + lifecycle.App)
     platform/                # logger + OTel
     presentation/http/       # middleware.Register, response, routes shell
     server/                  # HTTP lifecycle.Component
-    infrastructure/          # Mongo connect, bsonutil, …
+    infrastructure/
+      persistence/migrations/ # golang-migrate JSON indexes
   config/
 swagger/                     # generated OpenAPI (swag)
 bruno/                       # Bruno API collection (local Item CRUD)
